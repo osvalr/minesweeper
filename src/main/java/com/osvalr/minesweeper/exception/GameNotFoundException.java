@@ -1,4 +1,4 @@
-package com.osvalr.minesweeper.service.exception;
+package com.osvalr.minesweeper.exception;
 
 import javax.annotation.Nonnull;
 
