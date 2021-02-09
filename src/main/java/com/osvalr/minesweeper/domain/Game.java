@@ -1,22 +1,19 @@
 package com.osvalr.minesweeper.domain;
 
 import javax.annotation.Nonnull;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import java.util.Date;
 import java.util.UUID;
 
 import static java.util.Objects.requireNonNull;
 
-@Entity
-public class Game extends BaseEntity {
+public class Game {
 
-    private final String gameId;
-    private final Date startTime;
+    private String gameId;
+    private Date startTime;
+    private GameSize gameSize;
 
-    @Enumerated(EnumType.ORDINAL)
-    private final GameSize gameSize;
+    public Game() {
+    }
 
     public Game(@Nonnull GameSize gameSize) {
         this.gameId = UUID.randomUUID().toString();
@@ -28,11 +25,23 @@ public class Game extends BaseEntity {
         return gameId;
     }
 
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
+    }
+
     public Date getStartTime() {
         return startTime;
     }
 
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
     public GameSize getGameSize() {
         return gameSize;
+    }
+
+    public void setGameSize(GameSize gameSize) {
+        this.gameSize = gameSize;
     }
 }
