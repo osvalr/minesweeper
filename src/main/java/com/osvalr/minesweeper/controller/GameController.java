@@ -27,13 +27,13 @@ public class GameController {
         this.gameService = gameService;
     }
 
-    @PostMapping("/game/")
+    @PostMapping("/games/")
     public ResponseEntity<GameStatus> createGame(@RequestBody CreateGame createGame) {
         GameStatus game = gameService.create(createGame.getGameSize());
         return ResponseEntity.ok(game);
     }
 
-    @GetMapping("/game/")
+    @GetMapping("/games/")
     public ResponseEntity<GameStatus> getGameDetails(@RequestParam("id") String gameId) {
         Optional<Game> gameOptional = gameService.getGameById(gameId);
         if (!gameOptional.isPresent()) {
@@ -43,7 +43,7 @@ public class GameController {
         return ResponseEntity.ok(new GameStatus(game.getGameId(),  game.getStartTime().toString()));
     }
 
-    @PatchMapping("/game/{id}/flag")
+    @PatchMapping("/games/{id}/flag")
     public ResponseEntity<GameStatus> flagPosition(@PathVariable("id") String gameId,
                                                    @RequestBody PositionRequest positionRequest) {
         Optional<Game> gameOptional = gameService.getGameById(gameId);
@@ -56,7 +56,7 @@ public class GameController {
     }
 
 
-    @PatchMapping("/game/{id}/open")
+    @PatchMapping("/games/{id}/open")
     public ResponseEntity<GameStatus> openPosition(@PathVariable("id") String gameId,
                                                    @RequestBody PositionRequest positionRequest) {
         Optional<Game> gameOptional = gameService.getGameById(gameId);
