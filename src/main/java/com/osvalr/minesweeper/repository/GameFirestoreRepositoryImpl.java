@@ -3,16 +3,20 @@ package com.osvalr.minesweeper.repository;
 import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.SetOptions;
+import com.google.common.base.Strings;
+import com.osvalr.minesweeper.domain.Field;
+import com.osvalr.minesweeper.domain.FieldConverter;
+import com.osvalr.minesweeper.domain.FirestoreGame;
 import com.osvalr.minesweeper.domain.Game;
-import com.osvalr.minesweeper.domain.GameSize;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
-@Repository
+@Component
 public class GameFirestoreRepositoryImpl implements GameFirestoreRepository {
 
+    private static final String COLLECTION = "GAMES";
     private final Firestore firestore;
 
     public GameFirestoreRepositoryImpl(Firestore firestore) {
@@ -21,9 +25,11 @@ public class GameFirestoreRepositoryImpl implements GameFirestoreRepository {
 
     @Override
     public void save(Game game) {
-        firestore.collection("GAMES")
+        FirestoreGame fGame = new FirestoreGame(game.getGameId(), game.getStartTime(),
+                FieldConverter.toJson(game.getField()));
+        firestore.collection(COLLECTION)
                 .document(game.getGameId())
-                .set(game, SetOptions.merge());
+                .set(fGame, SetOptions.merge());
     }
 
     @Override
@@ -32,7 +38,7 @@ public class GameFirestoreRepositoryImpl implements GameFirestoreRepository {
         game.setGameId(gameId);
         DocumentSnapshot ref;
         try {
-            ref = firestore.collection("GAMES")
+            ref = firestore.collection(COLLECTION)
                     .document(gameId)
                     .get()
                     .get();
@@ -40,7 +46,11 @@ public class GameFirestoreRepositoryImpl implements GameFirestoreRepository {
             return Optional.empty();
         }
         game.setStartTime(ref.getDate("startTime"));
-        game.setGameSize(ref.get("gameSize", GameSize.class));
+        String fieldValue = ref.getString("field");
+        if (Strings.isNullOrEmpty(fieldValue)) {
+            return Optional.empty();
+        }
+        game.setField(FieldConverter.fromJson(Field.class, fieldValue));
         return Optional.of(game);
     }
 }

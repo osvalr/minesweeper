@@ -1,23 +1,17 @@
 package com.osvalr.minesweeper.domain;
 
-import javax.annotation.Nonnull;
 import java.util.Date;
-import java.util.UUID;
 
-public class Game {
+public class FirestoreGame {
 
     private String gameId;
     private Date startTime;
-    private Field field;
+    private String field;
 
-    public Game() {
-    }
-
-    public Game(@Nonnull GameSize gameSize) {
-        this.gameId = UUID.randomUUID().toString();
-        this.field = new Field(gameSize);
-        this.startTime = new Date();
-        this.field.init();
+    public FirestoreGame(String gameId, Date startTime, String field) {
+        this.gameId = gameId;
+        this.startTime = startTime;
+        this.field = field;
     }
 
     public String getGameId() {
@@ -36,11 +30,11 @@ public class Game {
         this.startTime = startTime;
     }
 
-    public Field getField() {
+    public String getField() {
         return field;
     }
 
-    public void setField(Field field) {
+    public void setField(String field) {
         this.field = field;
     }
 }
