@@ -1,6 +1,6 @@
 package com.osvalr.minesweeper.domain;
 
-public enum FieldState {
+public enum GameState {
     IN_PROGRESS,
     EXPLODED,
     FINISHED

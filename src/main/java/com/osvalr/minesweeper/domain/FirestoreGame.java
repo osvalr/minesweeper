@@ -7,11 +7,15 @@ public class FirestoreGame {
     private String gameId;
     private Date startTime;
     private String field;
+    private int size;
+    private GameState state;
 
-    public FirestoreGame(String gameId, Date startTime, String field) {
+    public FirestoreGame(String gameId, Date startTime, String field, int size, GameState state) {
         this.gameId = gameId;
         this.startTime = startTime;
         this.field = field;
+        this.size = size;
+        this.state = state;
     }
 
     public String getGameId() {
@@ -36,5 +40,21 @@ public class FirestoreGame {
 
     public void setField(String field) {
         this.field = field;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    public GameState getState() {
+        return state;
+    }
+
+    public void setState(GameState state) {
+        this.state = state;
     }
 }

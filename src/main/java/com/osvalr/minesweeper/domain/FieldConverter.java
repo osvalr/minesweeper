@@ -10,7 +10,7 @@ import static java.util.Objects.requireNonNull;
 
 public class FieldConverter {
     @Nullable
-    public static String toJson(@Nonnull Field field) {
+    public static String toJson(@Nonnull Object field) {
         requireNonNull(field);
         ObjectMapper objectMapper = new ObjectMapper();
         try {

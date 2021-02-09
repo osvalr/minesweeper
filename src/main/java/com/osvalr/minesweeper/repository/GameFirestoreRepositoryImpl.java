@@ -4,12 +4,14 @@ import com.google.cloud.firestore.DocumentSnapshot;
 import com.google.cloud.firestore.Firestore;
 import com.google.cloud.firestore.SetOptions;
 import com.google.common.base.Strings;
-import com.osvalr.minesweeper.domain.Field;
 import com.osvalr.minesweeper.domain.FieldConverter;
 import com.osvalr.minesweeper.domain.FirestoreGame;
 import com.osvalr.minesweeper.domain.Game;
+import com.osvalr.minesweeper.domain.Position;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
@@ -26,7 +28,8 @@ public class GameFirestoreRepositoryImpl implements GameFirestoreRepository {
     @Override
     public void save(Game game) {
         FirestoreGame fGame = new FirestoreGame(game.getGameId(), game.getStartTime(),
-                FieldConverter.toJson(game.getField()));
+                FieldConverter.toJson(game.getField()),
+                game.getSize(), game.getState());
         firestore.collection(COLLECTION)
                 .document(game.getGameId())
                 .set(fGame, SetOptions.merge());
@@ -46,11 +49,25 @@ public class GameFirestoreRepositoryImpl implements GameFirestoreRepository {
             return Optional.empty();
         }
         game.setStartTime(ref.getDate("startTime"));
+        game.setSize(ref.get("size", Integer.class));
         String fieldValue = ref.getString("field");
         if (Strings.isNullOrEmpty(fieldValue)) {
             return Optional.empty();
         }
-        game.setField(FieldConverter.fromJson(Field.class, fieldValue));
+        List<List<Map<String, Boolean>>> res = FieldConverter.fromJson(List.class, fieldValue);
+        if (res == null) {
+            return Optional.empty();
+        }
+        Position[][] field = new Position[game.getSize()][game.getSize()];
+        for (int i = 0; i < res.size(); i++) {
+//            field[i] = new Position[game.getSize()];
+            for (int j = 0; j < res.get(i).size(); j++) {
+                Map<String, Boolean> vals = res.get(i).get(j);
+                Position position = new Position(vals.get("mined"), vals.get("open"), vals.get("flag"));
+                field[i][j] = position;
+            }
+        }
+        game.setField(field);
         return Optional.of(game);
     }
 }

@@ -1,16 +1,21 @@
 package com.osvalr.minesweeper.domain;
 
 public class Position {
-    private Content content;
+    private boolean mined;
     private boolean open = false;
     private boolean flag = false;
 
-    public Position(boolean hasMine) {
-        content = hasMine? Content.MINE : Content.NOTHING;
+    public Position() {
     }
 
-    public void toggleFlag() {
-        flag = !flag;
+    public Position(boolean hasMine) {
+        this.mined = hasMine;
+    }
+
+    public Position(boolean mined, boolean open, boolean flag) {
+        this.mined = mined;
+        this.open = open;
+        this.flag = flag;
     }
 
     public boolean isOpen() {
@@ -21,15 +26,15 @@ public class Position {
         open = true;
     }
 
-    public boolean isAMine() {
-        return content == Content.MINE;
-    }
-
-    public boolean isFlagged() {
+    public boolean isFlag() {
         return flag;
     }
 
-    public String getValue() {
-        return content.getValue();
+    public void setFlag() {
+        this.flag = true;
+    }
+
+    public boolean isMined() {
+        return mined;
     }
 }
