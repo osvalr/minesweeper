@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface GameService {
     GameStatus create(@Nonnull GameSize gameSize);
 
-    Optional<Game> getGameById(@Nonnull String gameId);
+    Optional<Game> getGameById(@Nonnull Long gameId);
 
     void flagPosition(@Nonnull Game game, int x, int y);
 

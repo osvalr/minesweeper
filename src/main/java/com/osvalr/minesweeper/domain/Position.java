@@ -1,6 +1,8 @@
 package com.osvalr.minesweeper.domain;
 
-public class Position {
+import java.io.Serializable;
+
+public class Position implements Serializable {
     private boolean mined;
     private boolean open = false;
     private boolean flag = false;
@@ -36,5 +38,12 @@ public class Position {
 
     public boolean isMined() {
         return mined;
+    }
+
+    public static String getValue(Position position) {
+        if (position.isFlag()) {
+            return "?";
+        }
+        return position.isOpen() ? position.isMined() ? "*" : " " : "#";
     }
 }
