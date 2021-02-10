@@ -60,11 +60,9 @@ public class GameFirestoreRepositoryImpl implements GameFirestoreRepository {
         }
         Position[][] field = new Position[game.getSize()][game.getSize()];
         for (int i = 0; i < res.size(); i++) {
-//            field[i] = new Position[game.getSize()];
             for (int j = 0; j < res.get(i).size(); j++) {
                 Map<String, Boolean> vals = res.get(i).get(j);
-                Position position = new Position(vals.get("mined"), vals.get("open"), vals.get("flag"));
-                field[i][j] = position;
+                field[i][j] = new Position(vals.get("mined"), vals.get("open"), vals.get("flag"));;
             }
         }
         game.setField(field);
