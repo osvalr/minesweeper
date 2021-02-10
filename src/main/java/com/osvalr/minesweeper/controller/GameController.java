@@ -4,8 +4,11 @@ import com.osvalr.minesweeper.controller.dto.CreateGame;
 import com.osvalr.minesweeper.controller.dto.GameStatus;
 import com.osvalr.minesweeper.controller.dto.PositionRequest;
 import com.osvalr.minesweeper.domain.Game;
+import com.osvalr.minesweeper.domain.GameState;
+import com.osvalr.minesweeper.exception.GameIsOverException;
 import com.osvalr.minesweeper.exception.GameNotFoundException;
 import com.osvalr.minesweeper.service.GameService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -34,37 +37,43 @@ public class GameController {
     }
 
     @GetMapping("/games/")
-    public ResponseEntity<GameStatus> getGameDetails(@RequestParam("id") String gameId) {
+    public ResponseEntity<GameStatus> getGameDetails(@RequestParam("id") Long gameId) {
         Optional<Game> gameOptional = gameService.getGameById(gameId);
         if (!gameOptional.isPresent()) {
-            throw new GameNotFoundException(gameId);
+            throw new GameNotFoundException(gameId.toString());
         }
         Game game = gameOptional.get();
-        return ResponseEntity.ok(new GameStatus(game.getGameId(),  game.getStartTime().toString()));
+        return ResponseEntity.ok(new GameStatus(game.getId(), game.getTextRepresentation(), game.getStartTime().toString()));
     }
 
     @PatchMapping("/games/{id}/flag")
-    public ResponseEntity<GameStatus> flagPosition(@PathVariable("id") String gameId,
-                                                   @RequestBody PositionRequest positionRequest) {
+    public ResponseEntity<?> flagPosition(@PathVariable("id") Long gameId,
+                                          @RequestBody PositionRequest positionRequest) {
         Optional<Game> gameOptional = gameService.getGameById(gameId);
         if (!gameOptional.isPresent()) {
-            throw new GameNotFoundException(gameId);
+            throw new GameNotFoundException(gameId.toString());
         }
         Game game = gameOptional.get();
+        if (game.getState() != GameState.IN_PROGRESS) {
+            throw new GameIsOverException();
+        }
         gameService.flagPosition(game, positionRequest.getX(), positionRequest.getY());
-        return ResponseEntity.ok(new GameStatus(game.getGameId(), game.getStartTime().toString()));
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 
     @PatchMapping("/games/{id}/open")
-    public ResponseEntity<GameStatus> openPosition(@PathVariable("id") String gameId,
-                                                   @RequestBody PositionRequest positionRequest) {
+    public ResponseEntity<?> openPosition(@PathVariable("id") Long gameId,
+                                          @RequestBody PositionRequest positionRequest) {
         Optional<Game> gameOptional = gameService.getGameById(gameId);
         if (!gameOptional.isPresent()) {
-            throw new GameNotFoundException(gameId);
+            throw new GameNotFoundException(gameId.toString());
         }
         Game game = gameOptional.get();
+        if (game.getState() != GameState.IN_PROGRESS) {
+            throw new GameIsOverException();
+        }
         gameService.openPosition(game, positionRequest.getX(), positionRequest.getY());
-        return ResponseEntity.ok(new GameStatus(game.getGameId(),  game.getStartTime().toString()));
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

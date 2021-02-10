@@ -20,4 +20,10 @@ public class ErrorControllerAdvice {
     public String handlePositionOutOfBounds(PositionOutOfBounds exception, WebRequest request) {
         return exception.getMessage();
     }
+
+    @ExceptionHandler(GameIsOverException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public String handleGameIsOverException(GameIsOverException exception, WebRequest request) {
+        return "";
+    }
 }
