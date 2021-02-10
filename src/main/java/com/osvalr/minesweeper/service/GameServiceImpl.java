@@ -23,7 +23,7 @@ public class GameServiceImpl implements GameService {
     public GameStatus create(@Nonnull GameSize gameSize) {
         Game game = new Game(gameSize);
         gameFirestoreRepository.save(game);
-        return new GameStatus(game.getGameId(), "", game.getStartTime().toString());
+        return new GameStatus(game.getGameId(), game.getStartTime().toString());
     }
 
     @Override
@@ -32,8 +32,8 @@ public class GameServiceImpl implements GameService {
     }
 
     private void validateBounds(int expectedSize, int x, int y) {
-        if (x < 0 || x >= expectedSize
-                || y < 0 || y >= expectedSize) {
+        if (x < 1 || x > expectedSize
+                || y < 1 || y > expectedSize) {
             throw new PositionOutOfBounds("X or Y is out of bounds");
         }
     }
@@ -52,6 +52,6 @@ public class GameServiceImpl implements GameService {
     @Override
     public void openPosition(@Nonnull Game game, int x, int y) {
         validateBounds(game.getSize(), x, y);
-        runAndSave(game::open, x, y, game);
+        runAndSave(game::open, x - 1, y - 1, game);
     }
 }
