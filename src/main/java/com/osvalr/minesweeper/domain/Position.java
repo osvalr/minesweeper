@@ -32,8 +32,8 @@ public class Position implements Serializable {
         return flag;
     }
 
-    public void setFlag() {
-        this.flag = true;
+    public void toggleFlag() {
+        flag = !flag;
     }
 
     public boolean isMined() {

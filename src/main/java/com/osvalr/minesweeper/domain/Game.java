@@ -82,7 +82,7 @@ public class Game extends BaseEntity {
 
     public void open(int x, int y) {
         Position[][] sfield = getPlayableField().get();
-        Position position = sfield[x][y];
+        Position position = sfield[y][x];
         if (position.isOpen()) {
             return;
         }
@@ -92,7 +92,7 @@ public class Game extends BaseEntity {
             return;
         }
         position.open();
-        openNeighborhood(sfield, x, y);
+        openNeighborhood(sfield, y, x);
         field = FieldConverter.toJson(sfield);
         if (!hasAvailablePositions(sfield)) {
             state = GameState.FINISHED;
@@ -154,9 +154,9 @@ public class Game extends BaseEntity {
         openIfNotMineOrFlagged(sfield, x, y + 1);
     }
 
-    public void setFlag(Integer x, Integer y) {
+    public void toggleFlag(Integer x, Integer y) {
         Position[][] sfield = getPlayableField().get();
-        sfield[x][y].setFlag();
+        sfield[y][x].toggleFlag();
         field = FieldConverter.toJson(sfield);
     }
 
@@ -177,5 +177,13 @@ public class Game extends BaseEntity {
                     POSITION_DELIMITER + "\n");
         }
         return buffer.toString();
+    }
+
+    public Date getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(Date endTime) {
+        this.endTime = endTime;
     }
 }
