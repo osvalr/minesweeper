@@ -10,6 +10,28 @@ version '1.0-SNAPSHOT'
 repositories {
     mavenCentral()
 }
+
+
+bootJar {
+    baseName  'minesweeper'
+    version  '1.0-SNAPSHOT'
+    from('../minesweeper-frontend/dist/minesweeper-ui') {
+        into 'static'
+    }
+}
+task buildComplete(type: Exec) {
+    workingDir "../minesweeper-frontend"
+    commandLine 'npm.cmd', 'install'
+    finalizedBy {
+        ngBuild
+    }
+}
+task ngBuild(type: Exec) {
+    workingDir "../minesweeper-frontend"
+    commandLine 'ng.cmd', 'build'
+}
+processResources.dependsOn project.tasks.buildComplete
+
 dependencies {
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
