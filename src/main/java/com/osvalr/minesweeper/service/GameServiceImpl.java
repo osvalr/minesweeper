@@ -1,8 +1,11 @@
 package com.osvalr.minesweeper.service;
 
-import com.osvalr.minesweeper.controller.dto.GameStatus;
+import com.osvalr.minesweeper.controller.dto.GameResponse;
 import com.osvalr.minesweeper.domain.Game;
 import com.osvalr.minesweeper.domain.GameSize;
+import com.osvalr.minesweeper.domain.GameState;
+import com.osvalr.minesweeper.exception.GameExplodedException;
+import com.osvalr.minesweeper.exception.GameFinishedException;
 import com.osvalr.minesweeper.exception.PositionOutOfBounds;
 import com.osvalr.minesweeper.repository.GameRepository;
 import org.springframework.stereotype.Service;
@@ -22,10 +25,10 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public GameStatus create(@Nonnull GameSize gameSize) {
+    public GameResponse create(@Nonnull GameSize gameSize) {
         Game game = new Game(gameSize);
         gameRepository.save(game);
-        return new GameStatus(game.getId(), game.getStartTime().toString());
+        return new GameResponse(game.getId(), game.getStartTime().getTime());
     }
 
     @Override
@@ -48,11 +51,17 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public void flagPosition(@Nonnull Game game, int x, int y) {
-        runAndSave(game::setFlag, x, y, game);
+        runAndSave(game::toggleFlag, x, y, game);
     }
 
     @Override
     public void openPosition(@Nonnull Game game, int x, int y) {
         runAndSave(game::open, x, y, game);
+        if (game.getState() == GameState.EXPLODED) {
+            throw new GameExplodedException();
+        }
+        if (game.getState() == GameState.FINISHED) {
+            throw new GameFinishedException();
+        }
     }
 }
