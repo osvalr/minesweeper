@@ -15,11 +15,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @CrossOrigin
 @RestController
@@ -34,11 +35,11 @@ public class GameController {
     @PostMapping("/games/")
     public ResponseEntity<GameResponse> createGame(@RequestBody CreateGameRequest createGame) {
         int size = createGame.getSize();
-        if (size < 1 || size > 100){
+        if (size < 1 || size > 100) {
             throw new GameNotCreatedException(size + " isn't a valid value");
         }
         double mines = createGame.getMinesPercentage();
-        if (mines < 0.10 || mines > 1.00){
+        if (mines < 0.10 || mines > 1.00) {
             throw new GameNotCreatedException(mines + " isn't a valid value");
         }
         GameResponse game = gameService.create(createGame.getSize(), createGame.getMinesPercentage());
@@ -46,7 +47,20 @@ public class GameController {
     }
 
     @GetMapping("/games/")
-    public ResponseEntity<GameDetailsResponse> getGameDetails(@RequestParam("id") Long gameId) {
+    public ResponseEntity<List<GameDetailsResponse>> getAllGames() {
+        Optional<List<Game>> listOptional = gameService.getAllGames();
+        if (!listOptional.isPresent()) {
+            throw new GameNotFoundException("");
+        }
+        List<Game> gameList = listOptional.get();
+        return ResponseEntity.ok(gameList.stream().map(it -> new GameDetailsResponse(it.getId(),
+                it.getStartTime() != null ? it.getStartTime().getTime() : null,
+                it.getEndTime() != null ? it.getEndTime().getTime() : null,
+                it.getFieldStr())).collect(Collectors.toList()));
+    }
+
+    @GetMapping("/games/{id}/details")
+    public ResponseEntity<GameDetailsResponse> getGameDetails(@PathVariable("id") Long gameId) {
         Optional<Game> gameOptional = gameService.getGameById(gameId);
         if (!gameOptional.isPresent()) {
             throw new GameNotFoundException(gameId.toString());

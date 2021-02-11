@@ -1,4 +1,4 @@
-interface GameResponse {
+interface GameResponseDto {
     'gameId': number;
     'gameTime': number;
 }

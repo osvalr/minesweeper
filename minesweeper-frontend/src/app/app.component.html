@@ -33,7 +33,7 @@
         <div class="row">
           <mat-form-field class="m-2">
             <mat-label>Game ID</mat-label>
-            <input matInput placeholder="Game ID" [(ngModel)]="game.gameId" />
+            <input matInput placeholder="Game ID" [(ngModel)]="gameId" />
           </mat-form-field>
           <button
             [disabled]="!gameId"
@@ -49,7 +49,7 @@
         <div class="row">
           <mat-form-field class="m-2" *ngIf="gameCreated">
             <mat-label>Start Time</mat-label>
-            <input matInput disabled [(ngModel)]="game.gameTime" />
+            <input matInput disabled [(ngModel)]="gameTime" />
           </mat-form-field>
         </div>
         <div class="row">
@@ -63,35 +63,38 @@
         <div *ngIf="gameCreated" class="m-4">
           <div *ngFor="let aRow of field; let y = index">
             <div class="field-row">
-              <div *ngFor="let aCol of field[y]; let x = index">
-                <div
-                  class="position"
-                  *ngIf="!gameExploded; else gameOver"
-                  (click)="openPosition(x, y)"
-                  (contextmenu)="flagPosition(x, y)"
-                >
-                  <mat-icon
-                    [class.flagged]="!aCol.open && aCol.flag"
-                    [class.new-position]="!aCol.open && !aCol.flag"
-                    [class.exploded]="aCol.open && aCol.mined"
-                    [class.open-position]="aCol.open && !aCol.mined"
-                  >
-                    {{
-                      aCol.open
-                        ? aCol.mined
-                          ? "api"
-                          : "done"
-                        : aCol.flag
-                        ? "flag"
-                        : "blur_on"
-                    }}
-                  </mat-icon>
+              <div *ngFor="let pos of field[y]; let x = index">
+                <div class="position" *ngIf="pos.open; else closedOrFlagged">
+                  {{ pos.hint }}
                 </div>
-                <ng-template #gameOver>
-                  <div>
-                    <mat-icon class="exploded">
-                      {{ aCol.mined ? "api" : aCol.flag ? "flag" : "layers" }}
+                <ng-template #closedOrFlagged>
+                  <div
+                    class="position"
+                    *ngIf="!gameExploded; else gameOver"
+                    (click)="pos.flag ? '' : openPosition(x, y)"
+                    (contextmenu)="flagPosition(x, y)"
+                  >
+                    <mat-icon
+                      [class.flagged]="!pos.open && pos.flag"
+                      [class.new-position]="!pos.open && !pos.flag"
+                    >
+                      {{ pos.flag ? "flag" : "blur_on" }}
                     </mat-icon>
+                  </div>
+                </ng-template>
+                <ng-template #gameOver>
+                  <div class="position">
+                    <mat-icon class="exploded" *ngIf="pos.mined; else notMined"
+                      >api</mat-icon
+                    >
+                    <ng-template #notMined>
+                      <mat-icon
+                        class="exploded"
+                        *ngIf="pos.flag; else notFlagged"
+                        >flag</mat-icon
+                      ></ng-template
+                    >
+                    <ng-template #notFlagged>{{ pos.hint }}</ng-template>
                   </div>
                 </ng-template>
               </div>

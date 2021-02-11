@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Nonnull;
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiConsumer;
 
@@ -62,5 +63,10 @@ public class GameServiceImpl implements GameService {
         if (game.getState() == GameState.FINISHED) {
             throw new GameFinishedException();
         }
+    }
+
+    @Override
+    public Optional<List<Game>> getAllGames() {
+        return Optional.of(gameRepository.findAll());
     }
 }

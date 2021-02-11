@@ -11,13 +11,17 @@ export class GameService {
   readonly ENDPOINT = environment.address + "/games/"
   constructor(private httpClient: HttpClient) { }
 
-  createGame(size: number, mines: number): Observable<GameResponse> {
-    return this.httpClient.post<GameResponse>(this.ENDPOINT, { 'size': size, 'mines': mines });
+  createGame(size: number, mines: number): Observable<GameResponseDto> {
+    return this.httpClient.post<GameResponseDto>(this.ENDPOINT, { 'size': size, 'mines': mines });
   }
 
-  getDetails(gameId: number): Observable<GameDetailsResponse> {
-    return this.httpClient.get<GameDetailsResponse>(this.ENDPOINT + "?id=" + gameId)
+  getOpenGames(): Observable<GameListResponseDto> {
+    return this.httpClient.get<GameListResponseDto>(this.ENDPOINT);
   }
+  getDetails(gameId: number): Observable<GameDetailsResponse> {
+    return this.httpClient.get<GameDetailsResponse>(this.ENDPOINT + "/" + gameId + "/details")
+  }
+
   open(gameId: number, x: number, y: number): Observable<void> {
     return this.httpClient.post<void>(this.ENDPOINT + gameId + "/open", { 'x': x + 1, 'y': y + 1 })
   }

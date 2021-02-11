@@ -3,6 +3,7 @@ import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { catchError } from 'rxjs/operators';
 import { throwError, of } from 'rxjs';
 import { FormControl, FormGroup } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -10,19 +11,22 @@ import { FormControl, FormGroup } from '@angular/forms';
   styleUrls: ['./app.component.css', '../../node_modules/bootstrap/dist/css/bootstrap.min.css']
 })
 export class AppComponent implements OnInit {
+  gameId: number;
+  startTime: number;
   endTime: number;
   gameSize: number;
   minesProb: number;
-
-
-  constructor(private gameService: GameService,
-    private changeDetector: ChangeDetectorRef) { }
   form: FormGroup;
   gameCreated: boolean;
-  game: GameResponse;
+  game: GameResponseDto;
   gameExploded: boolean;
   field: Position[][]
   currentSize: string = '0';
+
+  constructor(private gameService: GameService,
+    private changeDetector: ChangeDetectorRef,
+    private route: ActivatedRoute) { }
+
   ngOnInit(): void {
     this.gameExploded = false;
     this.gameCreated = false;
@@ -31,6 +35,7 @@ export class AppComponent implements OnInit {
     this.form = new FormGroup({
       userName: new FormControl(''),
     });
+    console.log(this.route.snapshot.data.openGames);
   }
 
   newGame() {
@@ -38,8 +43,9 @@ export class AppComponent implements OnInit {
     this.gameCreated = false;
     this.gameService.createGame(this.gameSize, this.minesProb)
       .subscribe(res => {
-        this.game = res;
-        this.gameService.getDetails(this.game.gameId)
+        this.gameId = res.gameId;
+        this.startTime = res.gameTime;
+        this.gameService.getDetails(this.gameId)
           .subscribe(res2 => {
             this.gameCreated = res !== undefined;
             this.field = JSON.parse(res2.field);
@@ -47,12 +53,12 @@ export class AppComponent implements OnInit {
       })
   }
   openPosition(x: number, y: number) {
-    this.gameService.open(this.game.gameId, x, y)
+    this.gameService.open(this.gameId, x, y)
       .pipe(
         catchError(this.handleError.bind(this))
       )
       .subscribe(_ => {
-        this.gameService.getDetails(this.game.gameId)
+        this.gameService.getDetails(this.gameId)
           .subscribe(res2 => {
             this.field = JSON.parse(res2.field);
           })
@@ -65,7 +71,7 @@ export class AppComponent implements OnInit {
       return throwError(errorMessage);
     }
     this.gameExploded = true
-    this.gameService.getDetails(this.game.gameId)
+    this.gameService.getDetails(this.gameId)
       .subscribe(res2 => {
         this.endTime = res2.endTime;
         this.field = JSON.parse(res2.field);
@@ -74,9 +80,9 @@ export class AppComponent implements OnInit {
     return of()
   }
   flagPosition(x: number, y: number) {
-    this.gameService.flag(this.game.gameId, x, y)
+    this.gameService.flag(this.gameId, x, y)
       .subscribe(_ => {
-        this.gameService.getDetails(this.game.gameId)
+        this.gameService.getDetails(this.gameId)
           .subscribe(res2 => {
             this.field = JSON.parse(res2.field);
           })
