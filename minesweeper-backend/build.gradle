@@ -30,7 +30,7 @@ task ngBuild(type: Exec) {
     workingDir "../minesweeper-frontend"
     commandLine 'ng.cmd', 'build'
 }
-processResources.dependsOn project.tasks.buildComplete
+//processResources.dependsOn project.tasks.buildComplete
 
 dependencies {
     implementation "org.springframework.boot:spring-boot-starter"

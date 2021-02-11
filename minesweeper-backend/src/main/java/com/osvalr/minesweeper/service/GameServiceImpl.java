@@ -2,7 +2,6 @@ package com.osvalr.minesweeper.service;
 
 import com.osvalr.minesweeper.controller.dto.GameResponse;
 import com.osvalr.minesweeper.domain.Game;
-import com.osvalr.minesweeper.domain.GameSize;
 import com.osvalr.minesweeper.domain.GameState;
 import com.osvalr.minesweeper.exception.GameExplodedException;
 import com.osvalr.minesweeper.exception.GameFinishedException;
@@ -25,8 +24,8 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public GameResponse create(@Nonnull GameSize gameSize) {
-        Game game = new Game(gameSize);
+    public GameResponse create(int size, double mines) {
+        Game game = new Game(size, mines);
         gameRepository.save(game);
         return new GameResponse(game.getId(), game.getStartTime().getTime());
     }
