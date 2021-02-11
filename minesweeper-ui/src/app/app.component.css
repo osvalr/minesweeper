@@ -1,0 +1,15 @@
+.new-position {
+    color: lightseagreen;
+}
+
+.exploded {
+    color: darkorange;
+}
+
+.flagged {
+    color: red;
+}
+
+.open-position {
+    color: greenyellow;
+}
