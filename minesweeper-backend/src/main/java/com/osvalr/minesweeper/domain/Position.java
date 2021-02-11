@@ -6,6 +6,7 @@ public class Position implements Serializable {
     private boolean mined;
     private boolean open = false;
     private boolean flag = false;
+    private int hint;
 
     public Position() {
     }
@@ -14,10 +15,11 @@ public class Position implements Serializable {
         this.mined = hasMine;
     }
 
-    public Position(boolean mined, boolean open, boolean flag) {
+    public Position(boolean mined, boolean open, boolean flag, int hint) {
         this.mined = mined;
         this.open = open;
         this.flag = flag;
+        this.hint = hint;
     }
 
     public boolean isOpen() {
@@ -40,10 +42,11 @@ public class Position implements Serializable {
         return mined;
     }
 
-    public static String getValue(Position position) {
-        if (position.isFlag()) {
-            return "?";
-        }
-        return position.isOpen() ? position.isMined() ? "*" : " " : "#";
+    public int getHint() {
+        return hint;
+    }
+
+    public void incrementHint() {
+        ++hint;
     }
 }
