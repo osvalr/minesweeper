@@ -11,8 +11,8 @@ export class GameService {
   readonly ENDPOINT = environment.address + "/games/"
   constructor(private httpClient: HttpClient) { }
 
-  createGame(size: number): Observable<GameResponse> {
-    return this.httpClient.post<GameResponse>(this.ENDPOINT, { 'size': 0 });
+  createGame(size: number, mines: number): Observable<GameResponse> {
+    return this.httpClient.post<GameResponse>(this.ENDPOINT, { 'size': size, 'mines': mines });
   }
 
   getDetails(gameId: number): Observable<GameDetailsResponse> {

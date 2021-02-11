@@ -2,6 +2,7 @@ import { GameService } from './game.service';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { catchError } from 'rxjs/operators';
 import { throwError, of } from 'rxjs';
+import { FormControl, FormGroup } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
@@ -10,11 +11,13 @@ import { throwError, of } from 'rxjs';
 })
 export class AppComponent implements OnInit {
   endTime: number;
+  gameSize: number;
+  minesProb: number;
 
 
   constructor(private gameService: GameService,
     private changeDetector: ChangeDetectorRef) { }
-
+  form: FormGroup;
   gameCreated: boolean;
   game: GameResponse;
   gameExploded: boolean;
@@ -23,12 +26,17 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     this.gameExploded = false;
     this.gameCreated = false;
+    this.gameSize = 8;
+    this.minesProb = 0.1;
+    this.form = new FormGroup({
+      userName: new FormControl(''),
+    });
   }
 
   newGame() {
     this.gameExploded = false;
     this.gameCreated = false;
-    this.gameService.createGame(0)
+    this.gameService.createGame(this.gameSize, this.minesProb)
       .subscribe(res => {
         this.game = res;
         this.gameService.getDetails(this.game.gameId)

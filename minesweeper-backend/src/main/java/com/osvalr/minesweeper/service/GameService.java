@@ -2,13 +2,12 @@ package com.osvalr.minesweeper.service;
 
 import com.osvalr.minesweeper.controller.dto.GameResponse;
 import com.osvalr.minesweeper.domain.Game;
-import com.osvalr.minesweeper.domain.GameSize;
 
 import javax.annotation.Nonnull;
 import java.util.Optional;
 
 public interface GameService {
-    GameResponse create(@Nonnull GameSize gameSize);
+    GameResponse create(int size, double mines);
 
     Optional<Game> getGameById(@Nonnull Long gameId);
 

@@ -1,10 +1,11 @@
 package com.osvalr.minesweeper.controller;
 
-import com.osvalr.minesweeper.controller.dto.CreateGame;
+import com.osvalr.minesweeper.controller.dto.CreateGameRequest;
 import com.osvalr.minesweeper.controller.dto.GameDetailsResponse;
 import com.osvalr.minesweeper.controller.dto.GameResponse;
 import com.osvalr.minesweeper.controller.dto.PositionRequest;
 import com.osvalr.minesweeper.domain.Game;
+import com.osvalr.minesweeper.exception.GameNotCreatedException;
 import com.osvalr.minesweeper.exception.GameNotFoundException;
 import com.osvalr.minesweeper.service.GameService;
 import org.springframework.http.HttpStatus;
@@ -31,8 +32,16 @@ public class GameController {
     }
 
     @PostMapping("/games/")
-    public ResponseEntity<GameResponse> createGame(@RequestBody CreateGame createGame) {
-        GameResponse game = gameService.create(createGame.getGameSize());
+    public ResponseEntity<GameResponse> createGame(@RequestBody CreateGameRequest createGame) {
+        int size = createGame.getSize();
+        if (size < 1 || size > 100){
+            throw new GameNotCreatedException(size + " isn't a valid value");
+        }
+        double mines = createGame.getMinesPercentage();
+        if (mines < 0.10 || mines > 1.00){
+            throw new GameNotCreatedException(mines + " isn't a valid value");
+        }
+        GameResponse game = gameService.create(createGame.getSize(), createGame.getMinesPercentage());
         return ResponseEntity.ok(game);
     }
 
@@ -46,7 +55,7 @@ public class GameController {
         return ResponseEntity.ok(new GameDetailsResponse(game.getId(),
                 game.getStartTime() != null ? game.getStartTime().getTime() : null,
                 game.getEndTime() != null ? game.getEndTime().getTime() : null,
-                game.getField()));
+                game.getFieldStr()));
     }
 
     @PostMapping("/games/{id}/flag")

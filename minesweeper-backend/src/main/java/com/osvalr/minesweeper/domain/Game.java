@@ -1,17 +1,14 @@
 package com.osvalr.minesweeper.domain;
 
-import com.google.common.base.Joiner;
-
 import javax.annotation.Nonnull;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import java.util.Arrays;
+import javax.persistence.PostLoad;
+import javax.persistence.Transient;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 @Entity
 public class Game extends BaseEntity {
@@ -19,25 +16,29 @@ public class Game extends BaseEntity {
     private Date startTime;
     private Date endTime;
     @Column(columnDefinition = "LONGVARCHAR")
-    private String field;
+    private String fieldStr;
+    @Transient
+    private Position[][] field;
     private int size;
+    private double mines;
     private GameState state;
 
     public Game() {
     }
 
-    public Game(@Nonnull GameSize gameSize) {
-        this.field = FieldConverter.toJson(getNewField(gameSize.getSize()));
+    public Game( int size, double mines) {
+        this.fieldStr = FieldConverter.toJson(getNewField(size, mines));
         this.startTime = new Date();
-        this.size = gameSize.getSize();
+        this.size = size;
+        this.mines = mines;
         this.state = GameState.IN_PROGRESS;
     }
 
-    private Position[][] getNewField(int size) {
+    private Position[][] getNewField(int size, double mines) {
         Position[][] field = new Position[size][size];
         for (int i = 0; i < size; ++i)
             for (int j = 0; j < size; ++j)
-                field[i][j] = new Position(new Random().nextDouble() < 0.1);
+                field[i][j] = new Position(new Random().nextDouble() < mines);
         return field;
     }
 
@@ -57,32 +58,31 @@ public class Game extends BaseEntity {
         return state;
     }
 
-    public String getField() {
-        return field;
+    public String getFieldStr() {
+        return fieldStr;
     }
 
-    public void setField(String field) {
-        this.field = field;
+    public void setFieldStr(String fieldStr) {
+        this.fieldStr = fieldStr;
     }
 
-    private Optional<Position[][]> getPlayableField() {
-        List<List<Map<String, Boolean>>> res = FieldConverter.fromJson(List.class, field);
+    @PostLoad
+    private void setField() {
+        List<List<Map<String, Boolean>>> res = FieldConverter.fromJson(List.class, fieldStr);
         if (res == null) {
-            return Optional.empty();
+            field = null;
         }
-        Position[][] field = new Position[size][size];
+        field = new Position[size][size];
         for (int i = 0; i < res.size(); i++) {
             for (int j = 0; j < res.get(i).size(); j++) {
                 Map<String, Boolean> vals = res.get(i).get(j);
                 field[i][j] = new Position(vals.get("mined"), vals.get("open"), vals.get("flag"));
             }
         }
-        return Optional.of(field);
     }
 
     public void open(int x, int y) {
-        Position[][] sfield = getPlayableField().get();
-        Position position = sfield[y][x];
+        Position position = field[y][x];
         if (position.isOpen()) {
             return;
         }
@@ -92,18 +92,18 @@ public class Game extends BaseEntity {
             return;
         }
         position.open();
-        openNeighborhood(sfield, y, x);
-        field = FieldConverter.toJson(sfield);
-        if (!hasAvailablePositions(sfield)) {
+        openNeighborhood(field, y, x);
+        fieldStr = FieldConverter.toJson(field);
+        if (!hasAvailablePositions()) {
             state = GameState.FINISHED;
             endTime = new Date();
         }
     }
 
-    private boolean hasAvailablePositions(Position[][] sfield) {
+    private boolean hasAvailablePositions() {
         for (int i = 0; i < size; ++i) {
             for (int j = 0; j < size; ++j) {
-                Position pos = sfield[i][j];
+                Position pos = field[i][j];
                 if (pos.isFlag() || !pos.isOpen()) {
                     return true;
                 }
@@ -112,14 +112,14 @@ public class Game extends BaseEntity {
         return false;
     }
 
-    private void openIfNotMineOrFlagged(Position[][] sfield, int x, int y) {
+    private void openIfNotMineOrFlagged(int x, int y) {
         if (x < 0 || x >= size
                 || y < 0 || y >= size
-                || sfield[x][y].isMined()
-                || sfield[x][y].isFlag()) {
+                || field[x][y].isMined()
+                || field[x][y].isFlag()) {
             return;
         }
-        sfield[x][y].open();
+        field[x][y].open();
     }
 
     /**
@@ -135,48 +135,32 @@ public class Game extends BaseEntity {
      */
     private void openNeighborhood(Position[][] sfield, int x, int y) {
         // a
-        openIfNotMineOrFlagged(sfield, x - 1, y - 1);
+        openIfNotMineOrFlagged(x - 1, y - 1);
         // d
-        openIfNotMineOrFlagged(sfield, x - 1, y);
+        openIfNotMineOrFlagged(x - 1, y);
         // f
-        openIfNotMineOrFlagged(sfield, x - 1, y + 1);
+        openIfNotMineOrFlagged(x - 1, y + 1);
 
         // c
-        openIfNotMineOrFlagged(sfield, x + 1, y - 1);
+        openIfNotMineOrFlagged(x + 1, y - 1);
         // e
-        openIfNotMineOrFlagged(sfield, x + 1, y);
+        openIfNotMineOrFlagged(x + 1, y);
         // h
-        openIfNotMineOrFlagged(sfield, x + 1, y + 1);
+        openIfNotMineOrFlagged(x + 1, y + 1);
 
         // b
-        openIfNotMineOrFlagged(sfield, x, y - 1);
+        openIfNotMineOrFlagged(x, y - 1);
         // g
-        openIfNotMineOrFlagged(sfield, x, y + 1);
+        openIfNotMineOrFlagged(x, y + 1);
     }
 
     public void toggleFlag(Integer x, Integer y) {
-        Position[][] sfield = getPlayableField().get();
-        sfield[y][x].toggleFlag();
-        field = FieldConverter.toJson(sfield);
+        field[y][x].toggleFlag();
+        fieldStr = FieldConverter.toJson(field);
     }
 
     public void setSize(Integer size) {
         this.size = size;
-    }
-
-        private final static String POSITION_DELIMITER = "|";
-
-    public String getTextRepresentation() {
-        StringBuffer buffer = new StringBuffer();
-        for (Position[] row : getPlayableField().get()) {
-            buffer.append(POSITION_DELIMITER +
-                    Joiner.on(POSITION_DELIMITER)
-                            .join(Arrays.stream(row)
-                                    .map(Position::getValue)
-                                    .collect(Collectors.toList())) +
-                    POSITION_DELIMITER + "\n");
-        }
-        return buffer.toString();
     }
 
     public Date getEndTime() {

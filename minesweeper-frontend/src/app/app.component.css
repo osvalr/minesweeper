@@ -13,3 +13,11 @@
 .open-position {
     color: greenyellow;
 }
+
+.field-row {
+    grid-template-columns: repeat(auto-fit, minmax(20px, 1fr));
+    display: grid;
+}
+.position{
+    cursor: pointer;
+}
