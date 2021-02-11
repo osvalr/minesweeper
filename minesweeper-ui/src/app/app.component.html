@@ -1,0 +1,53 @@
+<div class="container">
+  <div class="row row-no-gutters">
+    <div class="col-xs-12 col-md-8">
+      <h1>MinesweeperUi</h1>
+      <div *ngIf="gameCreated">
+        ID#{{ game.gameId }} <br />
+        Start Time: {{ game.gameTime | date: "medium" }}
+      </div>
+      <div *ngIf="gameExploded">Time: {{ endTime | date: "medium" }}</div>
+      <div *ngIf="gameCreated" class="m-4">
+        <div *ngFor="let aRow of field; let y = index">
+          <div class="row">
+            <div *ngFor="let aCol of field[y]; let x = index">
+              <button
+                mat-stroked-button
+                *ngIf="!gameExploded; else gameOver"
+                (click)="openPosition(x, y)"
+                (contextmenu)="flagPosition(x, y)"
+                style="float: left"
+              >
+                <mat-icon
+                  [class.flagged]="!aCol.open && aCol.flag"
+                  [class.new-position]="!aCol.open && !aCol.flag"
+                  [class.exploded]="aCol.open && aCol.mined"
+                  [class.open-position]="aCol.open && !aCol.mined"
+                >
+                  {{
+                    aCol.open
+                      ? aCol.mined
+                        ? "api"
+                        : "done"
+                      : aCol.flag
+                      ? "flag"
+                      : "blur_on"
+                  }}
+                </mat-icon>
+              </button>
+              <ng-template #gameOver>
+                <button mat-stroked-button style="float: left" disabled>
+                  <mat-icon class="exploded">
+                    {{ aCol.mined ? "api" : aCol.flag ? "flag" : "layers" }}
+                  </mat-icon>
+                </button>
+              </ng-template>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button mat-flat-button color="warn" (click)="newGame()">New Game</button>
+    </div>
+  </div>
+</div>
