@@ -1,0 +1,107 @@
+<div class="container">
+  <div class="align-self-center">
+    <h1>MinesweeperUi</h1>
+    <div class="row">
+      <div class="col h-50">
+        <div class="row">
+          <mat-form-field class="m-2 w-1">
+            <mat-label>Rows x Cols</mat-label>
+            <input
+              matInput
+              placeholder="Rows x Cols (e.g. 1-100)"
+              [(ngModel)]="gameSize"
+            />
+          </mat-form-field>
+          <mat-form-field class="m-2">
+            <mat-label>Mines %</mat-label>
+            <input
+              matInput
+              placeholder="Mines % (e.g. 0.1 - 1.0)"
+              [(ngModel)]="minesProb"
+            />
+          </mat-form-field>
+          <button
+            mat-flat-button
+            style="background-color: green; color: white"
+            [disabled]="!gameSize || !minesProb"
+            (click)="newGame()"
+            class="m-2"
+          >
+            New Game
+          </button>
+        </div>
+        <div class="row">
+          <mat-form-field class="m-2">
+            <mat-label>Game ID</mat-label>
+            <input matInput placeholder="Game ID" [(ngModel)]="gameId" />
+          </mat-form-field>
+          <button
+            [disabled]="!gameId"
+            mat-stroked-button
+            style="background-color: darkorange; color: white"
+            (click)="getGame()"
+            class="m-2"
+          >
+            Go
+          </button>
+        </div>
+
+        <div class="row">
+          <mat-form-field class="m-2" *ngIf="gameCreated">
+            <mat-label>Start Time</mat-label>
+            <input matInput disabled [(ngModel)]="gameTime" />
+          </mat-form-field>
+        </div>
+        <div class="row">
+          <mat-form-field class="m-2" *ngIf="gameCreated && gameExploded">
+            <mat-label>End Time</mat-label>
+            <input matInput disabled [(ngModel)]="endTime" />
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="col">
+        <div *ngIf="gameCreated" class="m-4">
+          <div *ngFor="let aRow of field; let y = index">
+            <div class="field-row">
+              <div *ngFor="let pos of field[y]; let x = index">
+                <div class="position" *ngIf="pos.open; else closedOrFlagged">
+                  {{ pos.hint }}
+                </div>
+                <ng-template #closedOrFlagged>
+                  <div
+                    class="position"
+                    *ngIf="!gameExploded; else gameOver"
+                    (click)="pos.flag ? '' : openPosition(x, y)"
+                    (contextmenu)="flagPosition(x, y)"
+                  >
+                    <mat-icon
+                      [class.flagged]="!pos.open && pos.flag"
+                      [class.new-position]="!pos.open && !pos.flag"
+                    >
+                      {{ pos.flag ? "flag" : "blur_on" }}
+                    </mat-icon>
+                  </div>
+                </ng-template>
+                <ng-template #gameOver>
+                  <div class="position">
+                    <mat-icon class="exploded" *ngIf="pos.mined; else notMined"
+                      >api</mat-icon
+                    >
+                    <ng-template #notMined>
+                      <mat-icon
+                        class="exploded"
+                        *ngIf="pos.flag; else notFlagged"
+                        >flag</mat-icon
+                      ></ng-template
+                    >
+                    <ng-template #notFlagged>{{ pos.hint }}</ng-template>
+                  </div>
+                </ng-template>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

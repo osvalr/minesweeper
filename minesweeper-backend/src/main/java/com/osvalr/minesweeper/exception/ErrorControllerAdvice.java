@@ -39,4 +39,16 @@ public class ErrorControllerAdvice {
     public String handleGameNotCreatedException(GameNotCreatedException exception, WebRequest request) {
         return exception.getMessage();
     }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.FOUND)
+    public String handleUserAlreadyExistsException(UserAlreadyExistsException exception, WebRequest request) {
+        return "";
+    }
+
+    @ExceptionHandler(InvalidCredentialsException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    public String handleInvalidCredentialsException(InvalidCredentialsException exception, WebRequest request) {
+        return "";
+    }
 }
