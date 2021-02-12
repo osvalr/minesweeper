@@ -55,7 +55,11 @@
         <div class="row">
           <mat-form-field class="m-2" *ngIf="gameCreated">
             <mat-label>Start Time</mat-label>
-            <input matInput disabled [(ngModel)]="currentGame.gameTime" />
+            <input
+              matInput
+              disabled
+              value="{{ currentGame.gameTime | date: 'medium' }}"
+            />
           </mat-form-field>
         </div>
         <div class="row">
@@ -64,7 +68,11 @@
             *ngIf="gameCreated && currentGame.exploded"
           >
             <mat-label>End Time</mat-label>
-            <input matInput disabled [(ngModel)]="currentGame.endTime" />
+            <input
+              matInput
+              disabled
+              value="{{ currentGame.endTime | date: 'medium' }}"
+            />
           </mat-form-field>
         </div>
       </div>
