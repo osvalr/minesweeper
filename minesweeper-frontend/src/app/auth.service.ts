@@ -26,6 +26,7 @@ export class AuthService {
     return this.httpClient.post<LoginResponse>(environment.address + "/users/auth", { 'user': user, 'password': password })
       .pipe(
         map(login => {
+          localStorage.setItem("SESSION_TOKEN", login.token);
           this.isLoggedSubject.next(login.token !== null);
           return login
         })
