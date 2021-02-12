@@ -45,6 +45,14 @@ export class GameComponent implements OnInit {
       this.currentGame.exploded = false
     }
   }
+  readonly COLORS: string[] = [
+    '#000000',
+    '#002AF4',
+    '#E000BA',
+    '#FF007B',
+    '#920000',
+    '#FF0000'
+  ]
 
   newGame() {
     this.gameService.createGame(this.size, this.mines)
