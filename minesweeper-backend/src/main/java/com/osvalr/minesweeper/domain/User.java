@@ -1,7 +1,11 @@
 package com.osvalr.minesweeper.domain;
 
 import javax.annotation.Nonnull;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+
+import java.util.Set;
 
 import static java.util.Objects.requireNonNull;
 
@@ -10,6 +14,9 @@ public class User extends BaseEntity {
     private String user;
     private String password;
     private String activeToken;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
+    private Set<Game> games;
+
 
     public User() {
     }
@@ -41,5 +48,9 @@ public class User extends BaseEntity {
 
     public void setActiveToken(String activeToken) {
         this.activeToken = activeToken;
+    }
+
+    public Set<Game> getGames() {
+        return games;
     }
 }

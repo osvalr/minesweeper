@@ -3,6 +3,7 @@ package com.osvalr.minesweeper.service;
 import com.osvalr.minesweeper.controller.dto.GameResponse;
 import com.osvalr.minesweeper.domain.Game;
 import com.osvalr.minesweeper.domain.GameState;
+import com.osvalr.minesweeper.domain.User;
 import com.osvalr.minesweeper.exception.GameExplodedException;
 import com.osvalr.minesweeper.exception.GameFinishedException;
 import com.osvalr.minesweeper.exception.PositionOutOfBounds;
@@ -25,8 +26,9 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public GameResponse create(int size, double mines) {
+    public GameResponse create(User user, int size, double mines) {
         Game game = new Game(size, mines);
+        game.setUser(user);
         gameRepository.save(game);
         return new GameResponse(game.getId(), game.getStartTime().getTime());
     }

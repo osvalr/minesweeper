@@ -3,6 +3,7 @@ package com.osvalr.minesweeper.controller.dto;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.osvalr.minesweeper.domain.GameSize;
+import org.hibernate.annotations.Parameter;
 
 public class CreateGameRequest {
     private final int size;
