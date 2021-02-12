@@ -23,7 +23,7 @@ export class AuthService {
 
 
   login(user: string, password: string): Observable<LoginResponse> {
-    return this.httpClient.post<LoginResponse>(environment.address + "/login", { 'user': user, 'password': password })
+    return this.httpClient.post<LoginResponse>(environment.address + "/users/auth", { 'user': user, 'password': password })
       .pipe(
         map(login => {
           this.isLoggedSubject.next(login.token !== null);
