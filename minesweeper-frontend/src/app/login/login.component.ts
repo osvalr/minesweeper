@@ -42,8 +42,7 @@ export class LoginComponent implements OnInit {
       .pipe(
         catchError(this.handleError.bind(this))
       )
-      .subscribe(res => {
-        localStorage.setItem("SESSION_TOKEN", res.token);
+      .subscribe(_ => {
         this.router.navigateByUrl('/game')
       })
   }
