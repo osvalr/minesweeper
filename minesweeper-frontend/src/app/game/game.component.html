@@ -81,7 +81,11 @@
           <div *ngFor="let aRow of currentField; let y = index">
             <div class="field-row">
               <div *ngFor="let pos of currentField[y]; let x = index">
-                <div class="position" *ngIf="pos.open; else closedOrFlagged">
+                <div
+                  class="position"
+                  [style.color]="COLORS[pos.hint]"
+                  *ngIf="pos.open; else closedOrFlagged"
+                >
                   {{ pos.hint }}
                 </div>
                 <ng-template #closedOrFlagged>
@@ -111,7 +115,11 @@
                         >flag</mat-icon
                       ></ng-template
                     >
-                    <ng-template #notFlagged>{{ pos.hint }}</ng-template>
+                    <ng-template #notFlagged
+                      ><span [style.color]="COLORS[pos.hint]">{{
+                        pos.hint
+                      }}</span></ng-template
+                    >
                   </div>
                 </ng-template>
               </div>
