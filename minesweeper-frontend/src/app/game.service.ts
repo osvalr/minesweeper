@@ -23,11 +23,11 @@ export class GameService {
   }
 
   open(gameId: number, x: number, y: number): Observable<void> {
-    return this.httpClient.post<void>(this.ENDPOINT + gameId + "/open", { 'x': x + 1, 'y': y + 1 })
+    return this.httpClient.post<void>(this.ENDPOINT + gameId + "/positions", { 'x': x + 1, 'y': y + 1 })
   }
 
   flag(gameId: number, x: number, y: number): Observable<void> {
-    return this.httpClient.post<void>(this.ENDPOINT + gameId + "/flag", { 'x': x + 1, 'y': y + 1 })
+    return this.httpClient.post<void>(this.ENDPOINT + gameId + "/flags", { 'x': x + 1, 'y': y + 1 })
   }
 
 }

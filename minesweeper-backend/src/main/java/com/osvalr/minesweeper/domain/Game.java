@@ -5,6 +5,8 @@ import org.springframework.data.util.Pair;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.PostLoad;
 import javax.persistence.Transient;
 import java.util.Date;
@@ -12,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import static org.springframework.data.util.Pair.*;
+import static org.springframework.data.util.Pair.of;
 
 @Entity
 public class Game extends BaseEntity {
@@ -26,6 +28,9 @@ public class Game extends BaseEntity {
     private int size;
     private double mines;
     private GameState state;
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    private User user;
 
     public Game() {
     }
@@ -51,7 +56,7 @@ public class Game extends BaseEntity {
             }
         }
         for (Pair<Integer, Integer> pos : minesList) {
-            setHints(field,pos);
+            setHints(field, pos);
         }
         return field;
     }
@@ -210,5 +215,9 @@ public class Game extends BaseEntity {
 
     public void setEndTime(Date endTime) {
         this.endTime = endTime;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }
