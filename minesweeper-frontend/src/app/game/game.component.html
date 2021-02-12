@@ -8,7 +8,7 @@
             <input
               matInput
               placeholder="Rows x Cols (e.g. 1-100)"
-              [(ngModel)]="gameSize"
+              [(ngModel)]="size"
             />
           </mat-form-field>
           <mat-form-field class="m-2">
@@ -16,29 +16,36 @@
             <input
               matInput
               placeholder="Mines % (e.g. 0.1 - 1.0)"
-              [(ngModel)]="minesProb"
+              [(ngModel)]="mines"
             />
           </mat-form-field>
           <button
             mat-flat-button
             style="background-color: green; color: white"
-            [disabled]="!gameSize || !minesProb"
+            [disabled]="!size || !mines"
             (click)="newGame()"
             class="m-2"
           >
             New Game
           </button>
         </div>
-        <div class="row">
-          <mat-form-field class="m-2">
-            <mat-label>Game ID</mat-label>
-            <input matInput placeholder="Game ID" [(ngModel)]="gameId" />
+        <div class="row" *ngIf="hasGames">
+          <mat-form-field appearance="fill" class="m-2">
+            <mat-label>Open games</mat-label>
+            <mat-select [(value)]="selectedGameId">
+              <mat-option
+                *ngFor="let g of openGames; let i = index"
+                value="{{ g.gameId }}"
+                >{{ g.gameId }} - {{ g.gameTime | date: "medium" }}</mat-option
+              >
+            </mat-select>
           </mat-form-field>
           <button
-            [disabled]="!gameId"
+            [disabled]="!selectedGameId"
+            [class.mat-button-disabled]="!selectedGameId"
             mat-stroked-button
             style="background-color: darkorange; color: white"
-            (click)="getGame()"
+            (click)="goToGame()"
             class="m-2"
           >
             Go
@@ -48,28 +55,31 @@
         <div class="row">
           <mat-form-field class="m-2" *ngIf="gameCreated">
             <mat-label>Start Time</mat-label>
-            <input matInput disabled [(ngModel)]="gameTime" />
+            <input matInput disabled [(ngModel)]="currentGame.gameTime" />
           </mat-form-field>
         </div>
         <div class="row">
-          <mat-form-field class="m-2" *ngIf="gameCreated && gameExploded">
+          <mat-form-field
+            class="m-2"
+            *ngIf="gameCreated && currentGame.exploded"
+          >
             <mat-label>End Time</mat-label>
-            <input matInput disabled [(ngModel)]="endTime" />
+            <input matInput disabled [(ngModel)]="currentGame.endTime" />
           </mat-form-field>
         </div>
       </div>
       <div class="col">
         <div *ngIf="gameCreated" class="m-4">
-          <div *ngFor="let aRow of field; let y = index">
+          <div *ngFor="let aRow of currentField; let y = index">
             <div class="field-row">
-              <div *ngFor="let pos of field[y]; let x = index">
+              <div *ngFor="let pos of currentField[y]; let x = index">
                 <div class="position" *ngIf="pos.open; else closedOrFlagged">
                   {{ pos.hint }}
                 </div>
                 <ng-template #closedOrFlagged>
                   <div
                     class="position"
-                    *ngIf="!gameExploded; else gameOver"
+                    *ngIf="!currentGame.exploded; else gameOver"
                     (click)="pos.flag ? '' : openPosition(x, y)"
                     (contextmenu)="flagPosition(x, y)"
                   >
