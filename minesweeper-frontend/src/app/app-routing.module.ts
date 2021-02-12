@@ -1,3 +1,4 @@
+import { AuthGuard } from './auth.guard';
 import { GameComponent } from './game/game.component';
 import { LoginComponent } from './login/login.component';
 import { AppComponent } from './app.component';
@@ -8,22 +9,28 @@ import { OpenGamesResolver } from './open-games.resolver';
 
 const routes: Routes = [
   {
-    path: 'login',
-    component: LoginComponent,
-    pathMatch: 'full',
-  },
-  {
     path: 'game',
     component: GameComponent,
     resolve: {
       openGames: OpenGamesResolver
     },
-    pathMatch: 'full',
+    canActivate: [
+      AuthGuard
+    ],
+  },
+  {
+    path: 'login',
+    component: LoginComponent,
+  },
+
+  {
+    path: '',
+    redirectTo: '/login',
+    pathMatch: 'full'
   },
   {
     path: '**',
-    redirectTo: 'login',
-    pathMatch: 'full'
+    redirectTo: '/',
   },
 ];
 

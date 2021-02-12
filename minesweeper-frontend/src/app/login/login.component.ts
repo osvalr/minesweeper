@@ -32,7 +32,9 @@ export class LoginComponent implements OnInit {
     private router: Router) { }
 
   ngOnInit() {
-    this.authService.logout()
+    if (this.authService.isUserLogged()) {
+      this.router.navigate(['/game'])
+    }
   }
 
   login() {

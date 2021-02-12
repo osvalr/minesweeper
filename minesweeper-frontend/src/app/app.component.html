@@ -1,1 +1,15 @@
-<app-login></app-login>
+<p>
+  <mat-toolbar color="primary">
+    <span>Minesweeper</span>
+    <span class="spacer"></span>
+    <span
+      class="material-icons"
+      *ngIf="isUserLogged"
+      (click)="logout()"
+      style="cursor: pointer"
+    >
+      logout
+    </span>
+  </mat-toolbar>
+</p>
+<router-outlet></router-outlet>
