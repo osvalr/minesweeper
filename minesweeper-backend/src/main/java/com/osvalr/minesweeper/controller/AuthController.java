@@ -30,12 +30,6 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponse(token));
     }
 
-    @GetMapping("/logout")
-    public ResponseEntity<?> logout(@RequestHeader("Authorization") String sessionId) {
-        userService.logout(sessionId);
-        return ResponseEntity.status(HttpStatus.OK).build();
-    }
-
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(@RequestBody UserRequest userRequest) {
         userService.signUp(userRequest.getUser(), userRequest.getPassword());

@@ -1,26 +1,3 @@
-.new-position {
-    color: lightseagreen;
-}
-
-.exploded {
-    color: darkorange;
-}
-
-.flagged {
-    color: red;
-}
-
-.open-position {
-    color: greenyellow;
-}
-
-.field-row {
-    grid-template-columns: repeat(auto-fit, minmax(20px, 1fr));
-    display: grid;
-}
-
-.position {
-    cursor: pointer;
-    font-family: 'Play', sans-serif;
-    text-align: center;
+.spacer {
+    flex: 1 1 auto;
 }
