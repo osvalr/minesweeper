@@ -32,6 +32,7 @@ task ngBuild(type: Exec) {
 }
 //processResources.dependsOn project.tasks.buildComplete
 
+
 dependencies {
     implementation "org.springframework.boot:spring-boot-starter"
     implementation "org.springframework.boot:spring-boot-starter-web"
@@ -43,5 +44,9 @@ dependencies {
     implementation "com.h2database:h2"
 
     testImplementation "org.springframework.boot:spring-boot-starter-test"
-    testImplementation "junit:junit:4.12"
+    testImplementation(platform('org.junit:junit-bom:5.7.1'))
+    testImplementation "org.junit.jupiter:junit-jupiter-api"
+}
+test {
+    useJUnitPlatform()
 }
