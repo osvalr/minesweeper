@@ -36,14 +36,14 @@ public class Game extends BaseEntity {
     }
 
     public Game(int size, double mines) {
-        this.fieldStr = FieldConverter.toJson(getNewField(size, mines));
-        this.startTime = new Date();
         this.size = size;
         this.mines = mines;
         this.state = GameState.IN_PROGRESS;
+        this.fieldStr = FieldConverter.toJson(getNewField());
+        this.startTime = new Date();
     }
 
-    private Position[][] getNewField(int size, double mines) {
+    private Position[][] getNewField() {
         Position[][] field = new Position[size][size];
         List<Pair<Integer, Integer>> minesList = Lists.newArrayList();
         for (int i = 0; i < size; ++i) {
@@ -64,23 +64,29 @@ public class Game extends BaseEntity {
     private void setHints(Position[][] field, Pair<Integer, Integer> pos) {
         int row = pos.getFirst();
         int col = pos.getSecond();
-
         if (row - 1 >= 0) {
-            field[row - 1][col].incrementHint();
             if (col - 1 >= 0) {
-                field[row][col - 1].incrementHint();
                 field[row - 1][col - 1].incrementHint();
             }
-            if (row + 1 < size) {
-                field[row + 1][col - 1].incrementHint();
-            }
+            field[row - 1][col].incrementHint();
             if (col + 1 < size) {
                 field[row - 1][col + 1].incrementHint();
-                field[row][col + 1].incrementHint();
             }
         }
+        if (col - 1 >= 0) {
+            field[row][col - 1].incrementHint();
+        }
+        if (col + 1 < size) {
+            field[row][col + 1].incrementHint();
+        }
         if (row + 1 < size) {
+            if (col - 1 >= 0) {
+                field[row + 1][col - 1].incrementHint();
+            }
             field[row + 1][col].incrementHint();
+            if (col + 1 < size) {
+                field[row + 1][col + 1].incrementHint();
+            }
         }
     }
 
@@ -94,6 +100,10 @@ public class Game extends BaseEntity {
 
     public int getSize() {
         return size;
+    }
+
+    public void setSize(Integer size) {
+        this.size = size;
     }
 
     public GameState getState() {
@@ -149,8 +159,7 @@ public class Game extends BaseEntity {
     private boolean hasAvailablePositions() {
         for (int i = 0; i < size; ++i) {
             for (int j = 0; j < size; ++j) {
-                Position pos = field[i][j];
-                if (pos.isFlag() || !pos.isOpen()) {
+                if (!field[i][j].isOpen()) {
                     return true;
                 }
             }
@@ -203,10 +212,6 @@ public class Game extends BaseEntity {
     public void toggleFlag(Integer x, Integer y) {
         field[y][x].toggleFlag();
         fieldStr = FieldConverter.toJson(field);
-    }
-
-    public void setSize(Integer size) {
-        this.size = size;
     }
 
     public Date getEndTime() {
