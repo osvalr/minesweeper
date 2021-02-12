@@ -24,13 +24,13 @@ public class AuthController {
         this.userService = userService;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/users/auth")
     public ResponseEntity<LoginResponse> login(@RequestBody UserRequest userRequest) {
         String token = userService.login(userRequest.getUser(), userRequest.getPassword());
         return ResponseEntity.ok(new LoginResponse(token));
     }
 
-    @PostMapping("/signup")
+    @PostMapping("/users/signup")
     public ResponseEntity<?> signUp(@RequestBody UserRequest userRequest) {
         userService.signUp(userRequest.getUser(), userRequest.getPassword());
         return ResponseEntity.status(HttpStatus.OK).build();
