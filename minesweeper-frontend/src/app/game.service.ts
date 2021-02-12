@@ -19,7 +19,7 @@ export class GameService {
     return this.httpClient.get<GameListResponseDto>(this.ENDPOINT);
   }
   getDetails(gameId: number): Observable<GameDetailsResponse> {
-    return this.httpClient.get<GameDetailsResponse>(this.ENDPOINT + "/" + gameId + "/details")
+    return this.httpClient.get<GameDetailsResponse>(this.ENDPOINT + gameId + "/details")
   }
 
   open(gameId: number, x: number, y: number): Observable<void> {
