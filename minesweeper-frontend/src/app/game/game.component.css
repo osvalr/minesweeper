@@ -16,11 +16,19 @@
 
 .field-row {
     grid-template-columns: repeat(auto-fit, minmax(20px, 1fr));
-    display: grid;
+    display: flex;
 }
 
 .position {
     cursor: pointer;
     font-family: 'Play', sans-serif;
     text-align: center;
+    width: 30px;
+    height: 30px;
+}
+
+button {
+    width: fit-content;
+    height: fit-content;
+    top: 2.5vh;
 }

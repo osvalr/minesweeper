@@ -1,63 +1,64 @@
 <div class="container">
   <div class="align-self-center">
-    <div class="row">
-      <div class="col h-50">
-        <div class="row">
-          <mat-form-field class="m-2 w-1">
-            <mat-label>Rows x Cols</mat-label>
-            <input
-              matInput
-              placeholder="Rows x Cols (e.g. 1-100)"
-              [(ngModel)]="size"
-            />
-          </mat-form-field>
-          <mat-form-field class="m-2">
-            <mat-label>Mines %</mat-label>
-            <input
-              matInput
-              placeholder="Mines % (e.g. 0.1 - 1.0)"
-              [(ngModel)]="mines"
-            />
-          </mat-form-field>
-          <button
-            mat-flat-button
-            style="background-color: green; color: white"
-            [disabled]="!size || !mines"
-            (click)="newGame()"
-            class="m-2"
-          >
-            New Game
-          </button>
-        </div>
-        <div class="row" *ngIf="hasGames">
-          <mat-form-field appearance="fill" class="m-2">
-            <mat-label>Open games</mat-label>
-            <mat-select [(value)]="selectedGameId">
-              <mat-option
-                *ngFor="let g of openGames; let i = index"
-                value="{{ g.gameId }}"
-                >{{ g.gameId }} - {{ g.gameTime | date: "medium" }}</mat-option
-              >
-            </mat-select>
-          </mat-form-field>
-          <button
-            [disabled]="!selectedGameId"
-            [class.mat-button-disabled]="!selectedGameId"
-            mat-stroked-button
-            style="background-color: darkorange; color: white"
-            (click)="goToGame()"
-            class="m-2"
-          >
-            Go
-          </button>
-        </div>
-
-        <div class="row m-2" *ngIf="elapsedTime; else stoppedTime">
-          Elapsed Time : {{ elapsedTime }} secs
-        </div>
+    <div class="col h-50">
+      <div class="row">
+        <mat-form-field appearance="outline" class="m-2 w-1">
+          <mat-label>Rows x Cols</mat-label>
+          <input
+            matInput
+            placeholder="Rows x Cols (e.g. 1-100)"
+            [(ngModel)]="size"
+          />
+        </mat-form-field>
+        <mat-form-field appearance="outline" class="m-2">
+          <mat-label>Mines %</mat-label>
+          <input
+            matInput
+            placeholder="Mines % (e.g. 0.1 - 1.0)"
+            [(ngModel)]="mines"
+          />
+        </mat-form-field>
+        <button
+          mat-flat-button
+          style="background-color: green; color: white"
+          [disabled]="!size || !mines"
+          (click)="newGame()"
+          class="m-2"
+        >
+          New Game
+        </button>
+        <mat-form-field appearance="outline" *ngIf="hasGames" class="m-2">
+          <mat-label>Open games</mat-label>
+          <mat-select [(value)]="selectedGameId">
+            <mat-option
+              *ngFor="let g of openGames; let i = index"
+              value="{{ g.gameId }}"
+              >{{ g.gameId }} - {{ g.gameTime | date: "medium" }}</mat-option
+            >
+          </mat-select>
+        </mat-form-field>
+        <button
+          *ngIf="hasGames"
+          [disabled]="!selectedGameId"
+          [class.mat-button-disabled]="!selectedGameId"
+          mat-stroked-button
+          style="background-color: darkorange; color: white"
+          (click)="goToGame()"
+          class="m-2"
+        >
+          Go
+        </button>
       </div>
-      <div class="col">
-        <div *ngIf="currentGame.exploded; else gameInProgress" class="m-4">
+
+      <div class="row m-2" *ngIf="elapsedTime; else stoppedTime">
+        Elapsed Time : {{ elapsedTime }} secs
+      </div>
+
+      <div class="row">
+        <div
+          *ngIf="currentGame.exploded; else gameInProgress"
+          style="margin-left: auto; margin-right: auto"
+        >
           <div *ngFor="let aRow of currentField; let y = index">
             <div class="field-row">
               <div *ngFor="let pos of currentField[y]; let x = index">
@@ -81,7 +82,7 @@
           </div>
         </div>
         <ng-template #gameInProgress>
-          <div class="m-4">
+          <div style="margin-left: auto; margin-right: auto">
             <div *ngFor="let aRow of currentField; let y = index">
               <div class="field-row">
                 <div *ngFor="let pos of currentField[y]; let x = index">
