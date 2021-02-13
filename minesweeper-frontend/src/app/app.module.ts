@@ -7,7 +7,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule, MatCardModule, MatFormFieldModule, MatIconModule, MatInputModule, MatSelectModule, MatSnackBarModule, MatToolbar, MatToolbarModule } from '@angular/material';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { LongPressModule } from 'ngx-long-press';
 import { CommonModule } from '@angular/common';
 import { LoginComponent } from './login/login.component';
 import { GameComponent } from './game/game.component';
@@ -32,7 +31,6 @@ import { GameComponent } from './game/game.component';
     MatSelectModule,
     MatIconModule,
     HttpClientModule,
-    LongPressModule,
     MatButtonModule,
     FormsModule,
     MatSnackBarModule
