@@ -19,7 +19,7 @@ class GameTest {
         assertEquals(5, game.getSize());
         assertNull(game.getEndTime());
 
-        List<List<Map<String, Object>>> field = FieldConverter.fromJson(List.class, game.getFieldStr());
+        List<List<Map<String, Object>>> field = JsonHelper.fromJson(List.class, game.getFieldStr());
         List<Pair<Integer, Integer>> mineList = Lists.newArrayList();
         assertNotNull(field);
         int y = 0;

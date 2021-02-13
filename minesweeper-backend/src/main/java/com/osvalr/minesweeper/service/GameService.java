@@ -5,6 +5,7 @@ import com.osvalr.minesweeper.domain.Game;
 import com.osvalr.minesweeper.domain.User;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -13,9 +14,9 @@ public interface GameService {
 
     Optional<Game> getGameById(@Nonnull Long gameId);
 
-    void flagPosition(@Nonnull Game game, int x, int y);
+    void flagPosition(@Nonnull Game game, int row, int col);
 
-    void openPosition(@Nonnull Game game, int x, int y);
+    void openPosition(@Nonnull Game game, int row, int col);
 
-    Optional<List<Game>> getAllGames();
+    Optional<List<Game>> getAllOpenGamesByUserId(Long id);
 }
