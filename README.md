@@ -73,6 +73,12 @@ $ curl -X POST "https://minesweeper-7c885.herokuapp.com/games/1/flags" -H "accep
 - No unit tests for frontend app
 - One test case included for mine field creation where it's validated that adjacent cells are initialized properly
 
+**How to play**
+- Use left-click to open a field
+- Use right-click to toggle a flag in the field
+- Create  as many games as you like
+- Mines % is a threshold that is being used with a random function so that if the value is below that threshold will be place a mine in there.
+
 
 # ERD
 
