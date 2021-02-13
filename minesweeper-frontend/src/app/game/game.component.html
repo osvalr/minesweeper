@@ -67,7 +67,7 @@
         </mat-card-content>
       </mat-card>
 
-      <div class="row m-2" *ngIf="currentGame; else stoppedTime">
+      <div class="row m-2" *ngIf="currentGame">
         Elapsed Time : {{ elapsedTime }} secs
       </div>
       <div class="row" *ngIf="!currentGame; else displayGame">
