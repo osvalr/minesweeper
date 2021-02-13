@@ -2,22 +2,27 @@ package com.osvalr.minesweeper.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.osvalr.minesweeper.domain.GameSize;
-import org.hibernate.annotations.Parameter;
 
 public class CreateGameRequest {
-    private final int size;
+    private final int rows;
+    private final int cols;
     private final double minesPercentage;
 
     @JsonCreator
-    public CreateGameRequest(@JsonProperty("size") int size,
+    public CreateGameRequest(@JsonProperty("rows") int rows,
+                             @JsonProperty("cols") int cols,
                              @JsonProperty("mines") double minesPercentage) {
-        this.size = size;
+        this.rows = rows;
+        this.cols = cols;
         this.minesPercentage = minesPercentage;
     }
 
-    public int getSize() {
-        return size;
+    public int getRows() {
+        return rows;
+    }
+
+    public int getCols() {
+        return cols;
     }
 
     public double getMinesPercentage() {

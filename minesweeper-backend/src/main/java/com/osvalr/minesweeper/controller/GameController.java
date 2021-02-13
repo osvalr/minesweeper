@@ -56,16 +56,19 @@ public class GameController {
         if (!userOptional.isPresent()) {
             throw new SessionTokenNotValid();
         }
-
-        int size = createGame.getSize();
-        if (size < 1 || size > 100) {
-            throw new GameNotCreatedException(size + " isn't a valid value");
+        int cols = createGame.getCols();
+        if (cols < 1 || cols > 100) {
+            throw new GameNotCreatedException(cols + " isn't a valid value");
+        }
+        int rows = createGame.getRows();
+        if (rows < 1 || rows > 100) {
+            throw new GameNotCreatedException(rows + " isn't a valid value");
         }
         double mines = createGame.getMinesPercentage();
         if (mines < 0.10 || mines > 1.00) {
             throw new GameNotCreatedException(mines + " isn't a valid value");
         }
-        GameResponse game = gameService.create(userOptional.get(), createGame.getSize(), createGame.getMinesPercentage());
+        GameResponse game = gameService.create(userOptional.get(), rows, cols, createGame.getMinesPercentage());
         return ResponseEntity.ok(game);
     }
 
@@ -89,7 +92,8 @@ public class GameController {
                         .map(it -> new GameDetailsResponse(it.getId(),
                                 it.getStartTime() != null ? it.getStartTime().getTime() : null,
                                 it.getEndTime() != null ? it.getEndTime().getTime() : null,
-                                it.getFieldStr()))
+                                it.getFieldStr(),
+                                it.getState().ordinal()))
                         .collect(Collectors.toList()))
                 .orElseGet(Lists::newArrayList));
     }
@@ -111,7 +115,8 @@ public class GameController {
         return ResponseEntity.ok(new GameDetailsResponse(game.getId(),
                 game.getStartTime() != null ? game.getStartTime().getTime() : null,
                 game.getEndTime() != null ? game.getEndTime().getTime() : null,
-                game.getFieldStr()));
+                game.getFieldStr(),
+                game.getState().ordinal()));
     }
 
     @ApiOperation(

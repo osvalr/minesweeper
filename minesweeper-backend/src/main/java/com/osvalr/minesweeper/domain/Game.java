@@ -20,7 +20,8 @@ public class Game extends BaseEntity {
 
     private Date startTime;
     private Date endTime;
-    private int size;
+    private int rows;
+    private int cols;
     private double mines;
 
     @Column(columnDefinition = "LONGVARCHAR")
@@ -39,10 +40,11 @@ public class Game extends BaseEntity {
     public Game() {
     }
 
-    public Game(int size, double mines) {
-        this.size = size;
+    public Game(int rows, int cols, double mines) {
+        this.rows = rows;
+        this.cols = cols;
         this.mines = mines;
-        this.mineField = MineField.fromSize(size, mines);
+        this.mineField = MineField.fromSize(rows, cols, mines);
         this.fieldStr = JsonHelper.toJson(mineField.getField());
         this.startTime = new Date();
     }
@@ -56,13 +58,6 @@ public class Game extends BaseEntity {
         this.startTime = startTime;
     }
 
-    public int getSize() {
-        return size;
-    }
-
-    public void setSize(Integer size) {
-        this.size = size;
-    }
 
     public GameState getState() {
         return state;
@@ -82,7 +77,7 @@ public class Game extends BaseEntity {
         if (res == null) {
             mineField = null;
         }
-        mineField = new MineField(new Position[size][size], size);
+        mineField = new MineField(rows, cols);
         for (int i = 0; i < res.size(); i++) {
             for (int j = 0; j < res.get(i).size(); j++) {
                 Map<String, Object> vals = res.get(i).get(j);
@@ -112,12 +107,12 @@ public class Game extends BaseEntity {
     }
 
     public void toggleFlag(Integer row, Integer col) {
-        mineField.toggleFlag(row-1, col-1);
+        mineField.toggleFlag(row - 1, col - 1);
         fieldStr = JsonHelper.toJson(mineField.getField());
     }
 
     public void openPosition(Integer row, Integer col) throws GameExplodedException, GameFinishedException {
-        mineField.open(row-1, col-1);
+        mineField.open(row - 1, col - 1);
         fieldStr = JsonHelper.toJson(mineField.getField());
         if (!mineField.hasAvailablePositions()) {
             throw new GameFinishedException();

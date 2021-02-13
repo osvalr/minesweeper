@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface GameService {
-    GameResponse create(User user, int size, double mines);
+    GameResponse create(User user, int rows, int cols, double mines);
 
     Optional<Game> getGameById(@Nonnull Long gameId);
 
