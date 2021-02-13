@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  address: "https://minesweeper-7c885.herokuapp.com"
+  address: "http://localhost:8080"
 };
 
 /*
