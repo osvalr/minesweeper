@@ -1,21 +1,36 @@
 # Minesweeper API
 
-Running online at https://minesweeper-7c885.herokuapp.com/
+Running online at https://minesweeper-7c885.web.app/
+
+# DEMO
+![](.images/demo.gif)
 
 # Build and testing
-## How to build
+## Backend
+### build
 ```
-$ ./gradlew build
-```
-
-## How to run
-```
-$ ./gradlew bootRun
+minesweerper-API $ ./gradlew build
 ```
 
-## How to test
+### run
 ```
-$ ./gradlew test
+minesweerper-API $ ./gradlew bootRun
+```
+
+### test
+```
+minesweerper-API $ ./gradlew test
+```
+
+## Frontend
+### build
+```
+minesweerper-API/minesweeper-frontend $ ./ng build
+```
+
+### run (will run on )
+```
+minesweerper-API/minesweeper-frontend $ ./ng serve
 ```
 
 # API
@@ -25,34 +40,40 @@ $ ./gradlew test
 
 ## Create a new game
 ```
-$ curl --location --request POST 'http://localhost:8080/games/' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{
-      "size": 1
-  }'
+$ curl -X POST "https://minesweeper-7c885.herokuapp.com/users/signup" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"user\": \"osvalr\", \"password\": \"mypass\"}"
 ```
 
 ## Game Details
 ```
-$ curl --location --request GET 'http://localhost:8080/games/?id=1'
+$ curl -X GET "https://minesweeper-7c885.herokuapp.com/games/1/details" -H "accept: */*"
 ```
 
 ## Open position
 ```
-$ curl --location --request PATCH 'http://localhost:8080/games/2/open' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{
-      "x": 1,
-      "y": 1
-  }'
+$ curl -X POST "https://minesweeper-7c885.herokuapp.com/games/1/positions" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"x\": 1, \"y\": 1}"
 ```
 
 ## Flag position
 ```
-$ curl --location --request PATCH 'http://localhost:8080/games/2/flag' \
-  --header 'Content-Type: application/json' \
-  --data-raw '{
-      "x": 4,
-      "y": 4
-  }'
+$ curl -X POST "https://minesweeper-7c885.herokuapp.com/games/1/flags" -H "accept: */*" -H "Content-Type: application/json" -d "{ \"x\": 1, \"y\": 1}"
 ```
+
+**Stack used**
+- Database: H2 (In-memory DB, console enabled in /h2)
+- API served with a springboot app
+- Angular v8 app for API Client Library
+- Angular Material, boostrap v4, Google Fonts (Play) for hints numbers
+- Swagger available for documentation
+
+**Platforms**
+- Firebase Hosting for frontend
+- Herokuapp for backend as gradle project
+
+**Unit tests**
+- No unit tests for frontend app
+- One test case included for mine field creation where it's validated that adjacent cells are initialized properly
+
+
+# ERD
+
+![](.images/erd.png)

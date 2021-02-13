@@ -1,0 +1,28 @@
+// https://dbdiagram.io/d
+Table Game {
+  id int [pk]
+  cols int [not null]
+  rows int [not null]
+  end_time datetime [null]
+  mines double [not null]
+  start_time datetime [not null]
+  state int [not null]
+  user_id int [not null]
+  
+  Indexes {
+    (user_id)
+    id [unique]
+  }
+}
+
+Table User {
+  id int [pk]
+  active_token int
+  password varchar
+  user varchar
+  Indexes {
+    (id) [pk]
+  }
+}
+
+Ref: "Game"."user_id" < "User"."id"
