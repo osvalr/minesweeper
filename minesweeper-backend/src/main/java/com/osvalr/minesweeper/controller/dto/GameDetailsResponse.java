@@ -1,6 +1,7 @@
 package com.osvalr.minesweeper.controller.dto;
 
 public class GameDetailsResponse {
+    private int gameState;
     private Long gameId;
     private Long gameTime;
     private Long endTime;
@@ -12,11 +13,13 @@ public class GameDetailsResponse {
     public GameDetailsResponse(Long gameId,
                                Long gameTime,
                                Long endTime,
-                               String field) {
+                               String field,
+                               int gameState) {
         this.gameId = gameId;
         this.gameTime = gameTime;
         this.endTime = endTime;
         this.field = field;
+        this.gameState = gameState;
     }
 
     public Long getGameId() {
@@ -49,5 +52,13 @@ public class GameDetailsResponse {
 
     public void setField(String field) {
         this.field = field;
+    }
+
+    public int getGameState() {
+        return gameState;
+    }
+
+    public void setGameState(int gameState) {
+        this.gameState = gameState;
     }
 }

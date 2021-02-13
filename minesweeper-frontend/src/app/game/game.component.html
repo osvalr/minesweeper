@@ -1,118 +1,148 @@
 <div class="container">
   <div class="align-self-center">
-    <div class="col h-50">
-      <div class="row">
-        <mat-form-field appearance="outline" class="m-2 w-1">
-          <mat-label>Rows x Cols</mat-label>
-          <input
-            matInput
-            placeholder="Rows x Cols (e.g. 1-100)"
-            [(ngModel)]="size"
-          />
-        </mat-form-field>
-        <mat-form-field appearance="outline" class="m-2">
-          <mat-label>Mines %</mat-label>
-          <input
-            matInput
-            placeholder="Mines % (e.g. 0.1 - 1.0)"
-            [(ngModel)]="mines"
-          />
-        </mat-form-field>
-        <button
-          mat-flat-button
-          style="background-color: green; color: white"
-          [disabled]="!size || !mines"
-          (click)="newGame()"
-          class="m-2"
-        >
-          New Game
-        </button>
-        <mat-form-field appearance="outline" *ngIf="hasGames" class="m-2">
-          <mat-label>Open games</mat-label>
-          <mat-select [(value)]="selectedGameId">
-            <mat-option
-              *ngFor="let g of openGames; let i = index"
-              value="{{ g.gameId }}"
-              >{{ g.gameId }} - {{ g.gameTime | date: "medium" }}</mat-option
+    <div class="col">
+      <mat-card class="p-0">
+        <mat-card-content>
+          <form [formGroup]="form">
+            <mat-form-field appearance="outline" class="m-2 col-2">
+              <mat-label>Rows </mat-label>
+              <input
+                matInput
+                formControlName="rowsFormControl"
+                placeholder="Rows (e.g. 1-100)"
+              />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="m-2 col-2">
+              <mat-label>Cols</mat-label>
+              <input
+                matInput
+                formControlName="colsFormControl"
+                placeholder="Cols (e.g. 1-100)"
+              />
+            </mat-form-field>
+            <mat-form-field appearance="outline" class="m-2">
+              <mat-label>Mines Threshold</mat-label>
+              <input
+                matInput
+                formControlName="minesFormControl"
+                placeholder="Mines Threshold (e.g. 0.1 - 1.0)"
+              />
+            </mat-form-field>
+            <button
+              mat-flat-button
+              style="background-color: green; color: white"
+              [disabled]="form.invalid"
+              (click)="newGame()"
+              class="m-2"
             >
-          </mat-select>
-        </mat-form-field>
-        <button
-          *ngIf="hasGames"
-          [disabled]="!selectedGameId"
-          [class.mat-button-disabled]="!selectedGameId"
-          mat-stroked-button
-          style="background-color: darkorange; color: white"
-          (click)="goToGame()"
-          class="m-2"
-        >
-          Go
-        </button>
-      </div>
+              New Game
+            </button>
+            <mat-form-field
+              appearance="outline"
+              *ngIf="openGames.length > 0"
+              class="m-2"
+            >
+              <mat-label>Open games</mat-label>
+              <mat-select [(value)]="selectedGameId">
+                <mat-option
+                  *ngFor="let g of openGames; let i = index"
+                  value="{{ g.gameId }}"
+                  >{{ g.gameId }} -
+                  {{ g.gameTime | date: "medium" }}</mat-option
+                >
+              </mat-select>
+            </mat-form-field>
+            <button
+              *ngIf="openGames.length > 0"
+              [disabled]="!selectedGameId"
+              [class.mat-button-disabled]="!selectedGameId"
+              mat-stroked-button
+              style="background-color: darkorange; color: white"
+              (click)="goToGame()"
+              class="m-2"
+            >
+              Go
+            </button>
+          </form>
+        </mat-card-content>
+      </mat-card>
 
-      <div class="row m-2" *ngIf="elapsedTime; else stoppedTime">
+      <div class="row m-2" *ngIf="currentGame; else stoppedTime">
         Elapsed Time : {{ elapsedTime }} secs
       </div>
-
-      <div class="row">
-        <div
-          *ngIf="currentGame.exploded; else gameInProgress"
-          style="margin-left: auto; margin-right: auto"
+      <div class="row" *ngIf="!currentGame; else displayGame">
+        <span class="centered-text"
+          >You don't have any open games, start by clicking "New Game"</span
         >
-          <div *ngFor="let aRow of currentField; let y = index">
-            <div class="field-row">
-              <div *ngFor="let pos of currentField[y]; let x = index">
-                <div class="position">
-                  <mat-icon class="exploded" *ngIf="pos.mined; else notMined"
-                    >api</mat-icon
-                  >
-                  <ng-template #notMined>
-                    <mat-icon class="exploded" *ngIf="pos.flag; else notFlagged"
-                      >flag</mat-icon
-                    ></ng-template
-                  >
-                  <ng-template #notFlagged
-                    ><span [style.color]="COLORS[pos.hint]">{{
-                      pos.hint
-                    }}</span></ng-template
-                  >
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <ng-template #gameInProgress>
-          <div style="margin-left: auto; margin-right: auto">
+      </div>
+      <ng-template #displayGame>
+        <div class="row">
+          <div
+            *ngIf="
+              currentGame &&
+                currentGame.state &&
+                statesArray[currentGame.state].value === 'exploded';
+              else gameInProgress
+            "
+            style="margin-left: auto; margin-right: auto"
+          >
             <div *ngFor="let aRow of currentField; let y = index">
               <div class="field-row">
                 <div *ngFor="let pos of currentField[y]; let x = index">
-                  <div
-                    class="position"
-                    [style.color]="COLORS[pos.hint]"
-                    *ngIf="pos.open; else closedOrFlagged"
-                  >
-                    {{ pos.hint }}
-                  </div>
-                  <ng-template #closedOrFlagged>
-                    <div
-                      class="position"
-                      (click)="pos.flag ? '' : openPosition(x, y)"
-                      (contextmenu)="flagPosition(x, y)"
+                  <div class="position">
+                    <mat-icon class="exploded" *ngIf="pos.mined; else notMined"
+                      >api</mat-icon
                     >
+                    <ng-template #notMined>
                       <mat-icon
-                        [class.flagged]="!pos.open && pos.flag"
-                        [class.new-position]="!pos.open && !pos.flag"
-                      >
-                        {{ pos.flag ? "flag" : "blur_on" }}
-                      </mat-icon>
-                    </div>
-                  </ng-template>
+                        class="exploded"
+                        *ngIf="pos.flag; else notFlagged"
+                        >flag</mat-icon
+                      ></ng-template
+                    >
+                    <ng-template #notFlagged
+                      ><span [style.color]="colorsArray[pos.hint]">{{
+                        pos.hint
+                      }}</span></ng-template
+                    >
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </ng-template>
-      </div>
+          <ng-template #gameInProgress>
+            <div style="margin-left: auto; margin-right: auto">
+              <div *ngFor="let aRow of currentField; let y = index">
+                <div class="field-row">
+                  <div *ngFor="let pos of currentField[y]; let x = index">
+                    <div
+                      class="position"
+                      [style.color]="colorsArray[pos.hint]"
+                      *ngIf="pos.open; else closedOrFlagged"
+                    >
+                      {{ pos.hint }}
+                    </div>
+                    <ng-template #closedOrFlagged>
+                      <div
+                        class="position"
+                        (click)="pos.flag ? '' : openPosition(x, y)"
+                        (contextmenu)="flagPosition(x, y)"
+                      >
+                        <mat-icon
+                          [class.flagged]="!pos.open && pos.flag"
+                          [class.new-position]="!pos.open && !pos.flag"
+                        >
+                          {{ pos.flag ? "flag" : "blur_on" }}
+                        </mat-icon>
+                      </div>
+                    </ng-template>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+      </ng-template>
     </div>
   </div>
 </div>

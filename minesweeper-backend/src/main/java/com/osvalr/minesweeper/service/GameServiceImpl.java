@@ -6,7 +6,6 @@ import com.osvalr.minesweeper.domain.GameState;
 import com.osvalr.minesweeper.domain.User;
 import com.osvalr.minesweeper.exception.GameExplodedException;
 import com.osvalr.minesweeper.exception.GameFinishedException;
-import com.osvalr.minesweeper.exception.PositionOutOfBounds;
 import com.osvalr.minesweeper.repository.GameRepository;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +25,8 @@ public class GameServiceImpl implements GameService {
     }
 
     @Override
-    public GameResponse create(User user, int size, double mines) {
-        Game game = new Game(size, mines);
+    public GameResponse create(User user, int rows, int cols, double mines) {
+        Game game = new Game(rows, cols, mines);
         game.setUser(user);
         game.setState(GameState.IN_PROGRESS);
         gameRepository.save(game);
@@ -37,13 +36,6 @@ public class GameServiceImpl implements GameService {
     @Override
     public Optional<Game> getGameById(@Nonnull Long gameId) {
         return gameRepository.findById(gameId);
-    }
-
-    private void validateBounds(int expectedSize, int x, int y) {
-        if (x < 1 || x > expectedSize
-                || y < 1 || y > expectedSize) {
-            throw new PositionOutOfBounds("X or Y is out of bounds");
-        }
     }
 
     @Override
@@ -70,6 +62,6 @@ public class GameServiceImpl implements GameService {
 
     @Override
     public Optional<List<Game>> getAllOpenGamesByUserId(@Nonnull Long id) {
-        return gameRepository.findByUserId(id);
+        return gameRepository.findByStateAndUserId(GameState.IN_PROGRESS, id);
     }
 }

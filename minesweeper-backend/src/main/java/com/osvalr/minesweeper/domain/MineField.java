@@ -11,15 +11,17 @@ import static org.springframework.data.util.Pair.of;
 
 public class MineField {
     /**
-     * @param size Size of the field
+     *
+     * @param rows Number of rows
+     * @param cols Number of columns
      * @param minesThreshold Mine threshold
      * @return Mine field
      */
-    public static MineField fromSize(int size, double minesThreshold) {
-        MineField mineField = new MineField(new Position[size][size], size);
+    public static MineField fromSize(int rows, int cols, double minesThreshold) {
+        MineField mineField = new MineField( rows,cols);
         List<Pair<Integer, Integer>> minesList = Lists.newArrayList();
-        for (int i = 0; i < size; ++i) {
-            for (int j = 0; j < size; ++j) {
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
                 boolean hasMine = new Random().nextDouble() < minesThreshold;
                 if (hasMine) {
                     minesList.add(of(i, j));
@@ -28,30 +30,33 @@ public class MineField {
             }
         }
         for (Pair<Integer, Integer> pos : minesList) {
-            setHints(mineField.field, size, pos);
+            setHints(mineField.field, rows, cols, pos);
         }
         return mineField;
     }
 
     private final Position[][] field;
-    private final int size;
+    private final int rows;
+    private final int cols;
 
     /**
-     * @param field Mine field
-     * @param size Size of the field
+     * @param rows Number of rows
+     * @param cols Number of cols
      */
-    public MineField(Position[][] field, int size) {
-        this.field = field;
-        this.size = size;
+    public MineField(int rows ,int cols) {
+        this.field = new Position[rows][cols];
+        this.rows = rows;
+        this.cols = cols;
     }
 
     /**
      * Increment hints around pos
      * @param field 2-D array representation of the field
-     * @param size size of the board
+     * @param rows Number of rows
+     * @param cols Number of cols
      * @param pos (Row,Col) of the position where adjacent cells will be incremented
      */
-    private static void setHints(Position[][] field, int size, Pair<Integer, Integer> pos) {
+    private static void setHints(Position[][] field, int rows, int cols, Pair<Integer, Integer> pos) {
         int row = pos.getFirst();
         int col = pos.getSecond();
         if (row - 1 >= 0) {
@@ -59,22 +64,22 @@ public class MineField {
                 field[row - 1][col - 1].incrementHint();
             }
             field[row - 1][col].incrementHint();
-            if (col + 1 < size) {
+            if (col + 1 < cols) {
                 field[row - 1][col + 1].incrementHint();
             }
         }
         if (col - 1 >= 0) {
             field[row][col - 1].incrementHint();
         }
-        if (col + 1 < size) {
+        if (col + 1 < cols) {
             field[row][col + 1].incrementHint();
         }
-        if (row + 1 < size) {
+        if (row + 1 < rows) {
             if (col - 1 >= 0) {
                 field[row + 1][col - 1].incrementHint();
             }
             field[row + 1][col].incrementHint();
-            if (col + 1 < size) {
+            if (col + 1 < cols) {
                 field[row + 1][col + 1].incrementHint();
             }
         }
@@ -113,8 +118,8 @@ public class MineField {
      * @return True if there is at least one position available, False otherwise
      */
     public boolean hasAvailablePositions() {
-        for (int i = 0; i < size; ++i) {
-            for (int j = 0; j < size; ++j) {
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < cols; ++j) {
                 if (!field[i][j].isMined() && !field[i][j].isOpen()) {
                     return true;
                 }
@@ -129,8 +134,8 @@ public class MineField {
      * @param col Column of position
      */
     private void openIfNotMineOrFlagged(int row, int col) {
-        if (row < 0 || row >= size
-                || col < 0 || col >= size
+        if (row < 0 || row >= rows
+                || col < 0 || col >= cols
                 || field[row][col].isMined()
                 || field[row][col].isFlag()) {
             return;

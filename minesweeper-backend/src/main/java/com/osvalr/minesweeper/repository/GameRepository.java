@@ -1,6 +1,7 @@
 package com.osvalr.minesweeper.repository;
 
 import com.osvalr.minesweeper.domain.Game;
+import com.osvalr.minesweeper.domain.GameState;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,5 +16,5 @@ public interface GameRepository extends JpaRepository<Game, Long> {
     Optional<Game> findById(String Id);
 
     @Query
-    Optional<List<Game>> findByUserId(Long id);
+    Optional<List<Game>> findByStateAndUserId(GameState state, Long userId);
 }

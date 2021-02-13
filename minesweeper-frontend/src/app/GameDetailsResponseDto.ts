@@ -5,5 +5,5 @@ interface GameDetailsResponse {
     endTime: number;
     field: string;
     size: number;
-    exploded: boolean;
+    state: number;
 }
