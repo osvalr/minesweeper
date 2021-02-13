@@ -1,5 +1,6 @@
 package com.osvalr.minesweeper.controller;
 
+import com.google.common.collect.Lists;
 import com.osvalr.minesweeper.controller.dto.CreateGameRequest;
 import com.osvalr.minesweeper.controller.dto.GameDetailsResponse;
 import com.osvalr.minesweeper.controller.dto.GameResponse;
@@ -82,12 +83,15 @@ public class GameController {
         if (!userOptional.isPresent()) {
             throw new SessionTokenNotValid();
         }
-        return ResponseEntity.ok(userOptional.get().getGames()
-                .stream().map(it -> new GameDetailsResponse(it.getId(),
-                        it.getStartTime() != null ? it.getStartTime().getTime() : null,
-                        it.getEndTime() != null ? it.getEndTime().getTime() : null,
-                        it.getFieldStr())
-                ).collect(Collectors.toList()));
+        Optional<List<Game>> optionalGameList = gameService.getAllOpenGamesByUserId(userOptional.get().getId());
+        return ResponseEntity.ok(optionalGameList.
+                map(games -> games.stream()
+                        .map(it -> new GameDetailsResponse(it.getId(),
+                                it.getStartTime() != null ? it.getStartTime().getTime() : null,
+                                it.getEndTime() != null ? it.getEndTime().getTime() : null,
+                                it.getFieldStr()))
+                        .collect(Collectors.toList()))
+                .orElseGet(Lists::newArrayList));
     }
 
     @ApiOperation(
@@ -147,7 +151,7 @@ public class GameController {
             throw new GameNotFoundException(gameId.toString());
         }
         Game game = gameOptional.get();
-        gameService.openPosition(game, positionRequest.getX(), positionRequest.getY());
+        gameService.openPosition(game, positionRequest.getY(), positionRequest.getX());
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

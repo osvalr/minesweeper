@@ -1,3 +1,4 @@
+import { MatSnackBar } from '@angular/material';
 import { GameService } from './../game.service';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { catchError } from 'rxjs/operators';
@@ -28,7 +29,8 @@ export class GameComponent implements OnInit {
 
   constructor(private gameService: GameService,
     private changeDetector: ChangeDetectorRef,
-    private route: ActivatedRoute) { }
+    private route: ActivatedRoute,
+    private snackBar: MatSnackBar) { }
 
   ngOnInit(): void {
 
@@ -99,14 +101,23 @@ export class GameComponent implements OnInit {
       errorMessage = `Error: ${error.error.message}`;
       return throwError(errorMessage);
     }
-    this.currentGame.exploded = true
-    this.gameService.getDetails(this.currentGame.gameId)
-      .subscribe(res2 => {
-        this.currentGame.endTime = res2.endTime;
-        this.currentField = JSON.parse(res2.field);
-        this.changeDetector.detectChanges()
-        this.stopTimer()
+    if (error.status === 302) {
+      window.location.reload()
+      this.snackBar.open('YOU WON!!!', '', {
+        duration: 500,
+        horizontalPosition: 'center',
+        verticalPosition: 'bottom',
       })
+    } else if (error.status === 410) {
+      this.currentGame.exploded = true
+      this.gameService.getDetails(this.currentGame.gameId)
+        .subscribe(res2 => {
+          this.currentGame.endTime = res2.endTime;
+          this.currentField = JSON.parse(res2.field);
+          this.changeDetector.detectChanges()
+          this.stopTimer()
+        })
+    }
     return of()
   }
   stopTimer() {
